@@ -51,34 +51,48 @@ export const constantRoutes = [
       path: 'home',
       name: 'Home',
       component: () => import('@/views/home/index'),
-      meta: { title: '个人中心', icon: 'user' }
+      meta: { title: '个人主页', icon: 'user' }
     }]
   },
 
   {
-    path: '/service',
+    path: '/certification',
     component: Layout,
-    redirect: '/service/encrypt',
-    name: 'Service',
-    meta: { title: '服务', icon: 'el-icon-s-help' },
+    redirect: '/certification/apply',
+    name: 'Certification',
+    meta: { title: '认证', icon: 'el-icon-s-claim' },
     children: [
       {
-        path: 'encrypt',
-        name: 'Encrypt',
-        component: () => import('@/views/encrypt/index'),
-        meta: { title: '加密', icon: 'lock' }
-      },
-      {
-        path: 'sniff',
-        name: 'Sniff',
-        component: () => import('@/views/sniff/index'),
-        meta: { title: '嗅探', icon: 'search' }
-      },
-      {
-        path: 'certification',
-        name: 'Certification',
+        path: 'apply',
+        name: 'Certification_apply',
         component: () => import('@/views/certification/index'),
-        meta: { title: '认证', icon: 'el-icon-s-claim' }
+        meta: { title: '申请', icon: 'el-icon-document' }
+      },
+      {
+        path: 'list',
+        name: 'Certification_list',
+        component: () => import('@/views/certification_list/index'),
+        meta: { title: '待完成', icon: 'list' }
+      },
+      {
+        path: 'detail',
+        name: 'Certification_detail',
+        component: () => import('@/views/certification_detail/index'),
+        meta: { title: '详情', icon: 'list', activeMenu: '/certification/list' },
+        hidden: true
+      },
+    ]
+  },
+
+  {
+    path: '/judge',
+    component: Layout,
+    children: [
+      {
+        path: 'apply',
+        name: 'Judge',
+        component: () => import('@/views/judge/index'),
+        meta: { title: '裁决', icon: 'el-icon-s-check' }
       }
     ]
   },
@@ -93,66 +107,8 @@ export const constantRoutes = [
         component: () => import('@/views/form/index'),
         meta: { title: 'Form', icon: 'form' }
       }
-    ]
-  },
-
-  {
-    path: '/nested',
-    component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: 'Nested',
-      icon: 'nested'
-    },
-    children: [
-      {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
-          }
-        ]
-      },
-      {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        name: 'Menu2',
-        meta: { title: 'menu2' }
-      }
-    ]
+    ],
+    hidden: true
   },
 
   {
@@ -160,7 +116,8 @@ export const constantRoutes = [
     component: Layout,
     children: [
       {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
+        path: 'https://github.com/zzmsmm/AI_Watermark_Protection',
+        // path: '/certification/detail',
         meta: { title: 'External Link', icon: 'link' }
       }
     ]
