@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
 from . import models
@@ -19,13 +20,35 @@ def login(request):
         if username.strip() and password:
             try:
                 user = models.User.objects.get(user_name=username)
-            except:
-                return render(request, '', {'message': '用户名不存在'})  # 失败返回当前界面
+            except :
+                return JsonResponse({
+                    "code": 20000,
+                    "msg": "failed",
+                    "token": "404"
+                })
+                # return render(request, '', {'message': '用户名不存在'})  # 失败返回当前界面
             if user.password == password:
-                return redirect('')  # 登录成功的界面
+                token = user.token
+                resp = {
+                    "code": 20000,
+                    "msg": "successful",
+                    "token": token
+                }
+                return JsonResponse(resp)
+                # return redirect('')  # 登录成功的界面
             else:
-                return render(request, '', {'message': '密码错误'})
-    return render(request, '')
+                resp = {
+                    "code": 20000,
+                    "msg": "failed",
+                    "token": "404"
+                }
+                return JsonResponse(resp)
+                # return render(request, '', {'message': '密码错误'})
+    return JsonResponse({
+        "code": 20000,
+        "msg": "failed",
+        "token": "404"
+    })
 
 
 def register(request):
