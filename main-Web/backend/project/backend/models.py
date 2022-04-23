@@ -1,17 +1,20 @@
 from django.db import models
 
-
+MEDIA_ADDR = "http://localhost:8000/media/"
 # Create your models here.
 class User(models.Model):
     user_name = models.CharField(max_length=128, unique=True)
     password = models.CharField(max_length=256)
     token = models.CharField(max_length=128, null=True)
     email = models.CharField(max_length=128, null=True)
-    avatar = models.CharField(max_length=128, null=True)
+    # avatar = models.CharField(max_length=128, null=True)
+    avatar = models.ImageField(upload_to='avatar', default='', null=True)
 
     def __str__(self) -> str:
         return self.user_name
 
+    def get_avatar_url(self):
+        return MEDIA_ADDR + str(self.avatar)
 
 # 水印算法表
 class WaterMarkAlgorithm(models.Model):

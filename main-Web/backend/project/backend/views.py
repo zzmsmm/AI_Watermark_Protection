@@ -1,54 +1,73 @@
+from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
+from django.shortcuts import HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
+import json
 from . import models
 
 
 # from . import forms
 
 # Create your views here.
+@require_http_methods(["POST"])
 def login(request):
-    # 要求login视图的属性命名位username和password，并且加一个alert-warning的class，将显示消息命名为message
-    if request.method == "POST":
-        # login_form = forms.UserForm(request.post)
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        # if login_form.is_valid():
-        #    username = login_form.cleaned_data.get('username')
-        #    password = login_form.cleaned_data.get('password')
+    body_json = request.body.decode()
+    body_dict = json.loads(body_json)
+    username = body_dict.get('username')
+    password = body_dict.get('password')
+    print(username, password)
+    try:
+        user = models.User.objects.get(user_name=username)
+    except:
+        return JsonResponse({
+            "code": 60204,
+            "message": "not_exist"
+        })
+    if user.password == password:
+        token = user.token
+        resp = {
+            "code": 20000,
+            "data" : {
+                "token": token
+            }
+        }
+        return JsonResponse(resp)
+    else:
+        resp = {
+            "code": 60204,
+            "message": "wrong_password"
+        }
+        return JsonResponse(resp)
 
-        if username.strip() and password:
-            try:
-                user = models.User.objects.get(user_name=username)
-            except :
-                return JsonResponse({
-                    "code": 20000,
-                    "msg": "failed",
-                    "token": "404"
-                })
-                # return render(request, '', {'message': '用户名不存在'})  # 失败返回当前界面
-            if user.password == password:
-                token = user.token
-                resp = {
-                    "code": 20000,
-                    "msg": "successful",
-                    "token": token
-                }
-                return JsonResponse(resp)
-                # return redirect('')  # 登录成功的界面
-            else:
-                resp = {
-                    "code": 20000,
-                    "msg": "failed",
-                    "token": "404"
-                }
-                return JsonResponse(resp)
-                # return render(request, '', {'message': '密码错误'})
-    return JsonResponse({
+
+@require_http_methods(["POST"])
+def logout(request):
+    resp = {
+            "code": 20000,
+            "data": "success"
+        }
+    return JsonResponse(resp)
+
+
+@require_http_methods(["GET"])
+def getinfo(request):
+    token = request.GET.get("token")
+    try:
+        user = models.User.objects.get(token=token)
+    except:
+        return JsonResponse({
+            "code": 60204,
+            "message": "not_exist"
+        })
+    resp = {
         "code": 20000,
-        "msg": "failed",
-        "token": "404"
-    })
+        "data": {
+            "avatar": user.get_avatar_url(),
+            "name": user.user_name
+        }
+    }
+    return JsonResponse(resp)
 
 
 def register(request):
