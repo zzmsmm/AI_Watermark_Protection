@@ -5,7 +5,7 @@ MEDIA_ADDR = "http://localhost:8000/media/"
 class User(models.Model):
     user_name = models.CharField(max_length=128, unique=True)
     password = models.CharField(max_length=256)
-    token = models.CharField(max_length=128, null=True)
+    token = models.CharField(max_length=256, null=True)
     email = models.CharField(max_length=128, null=True)
     # avatar = models.CharField(max_length=128, null=True)
     avatar = models.ImageField(upload_to='avatar', default='', null=True)

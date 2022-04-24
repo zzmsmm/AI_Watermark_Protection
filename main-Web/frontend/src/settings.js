@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: '深度神经网络版权认证平台',
+  title: 'AI模型版权保护平台',
 
   /**
    * @type {boolean} true | false

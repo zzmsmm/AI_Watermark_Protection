@@ -13,14 +13,20 @@
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
             <el-dropdown-item>
-              个人主页
+              <span style="display:block;">
+                <svg-icon icon-class="home" style="width: 15px;height: 15px;"/>
+                个人主页</span>
             </el-dropdown-item>
           </router-link>
+          <!--
           <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
             <el-dropdown-item>Github</el-dropdown-item>
           </a>
+          -->
           <el-dropdown-item divided @click.native="logout">
-            <span style="display:block;">退出登录</span>
+            <span style="display:block;">
+              <svg-icon icon-class="logout" style="width: 15px;height: 15px;"/>
+              退出登录</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>

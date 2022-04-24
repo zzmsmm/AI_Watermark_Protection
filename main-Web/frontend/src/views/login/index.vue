@@ -3,7 +3,9 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">
+          <svg-icon icon-class="defender2" style="width: 30px;height: 30px;"/>
+          AI Defender | 登录</h3>
       </div>
 
       <el-form-item prop="username">
@@ -41,12 +43,8 @@
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
-
-      <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
-      </div>
+      <el-button :loading="loading" type="primary" style="width:45%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
+      <el-button  type="warning" style="width:45%;margin-bottom:30px;margin-left: 10%;" @click="toregister">注册</el-button>
 
     </el-form>
   </div>
@@ -119,6 +117,9 @@ export default {
           return false
         }
       })
+    },
+    toregister() {
+      this.$router.push({ path: '/register' })
     }
   }
 }

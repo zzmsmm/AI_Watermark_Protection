@@ -4,6 +4,7 @@ from django.shortcuts import HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
 import json
+import hashlib
 from . import models
 
 
@@ -22,13 +23,13 @@ def login(request):
     except:
         return JsonResponse({
             "code": 60204,
-            "message": "not_exist"
+            "message": "用户不存在"
         })
     if user.password == password:
         token = user.token
         resp = {
             "code": 20000,
-            "data" : {
+            "data": {
                 "token": token
             }
         }
@@ -36,16 +37,44 @@ def login(request):
     else:
         resp = {
             "code": 60204,
-            "message": "wrong_password"
+            "message": "密码错误"
         }
         return JsonResponse(resp)
+
+
+@require_http_methods(["POST"])
+def register(request):
+    body_json = request.body.decode()
+    body_dict = json.loads(body_json)
+    username = body_dict.get('username')
+    password = body_dict.get('password')
+    email = body_dict.get('email')
+    same_nameuser = models.User.objects.filter(user_name=username)
+    if same_nameuser:
+        resp = {
+            "code": 20000,
+            "message": "用户名已被使用"
+        }
+        return JsonResponse(resp)
+    new_user = models.User()
+    new_user.user_name = username
+    new_user.password = password
+    new_user.email = email
+    new_user.token = hashlib.md5(username.encode("utf-8")).hexdigest()
+    new_user.avatar = "default.png"
+    new_user.save()
+    resp = {
+        "code": 20000,
+        "message": "success"
+    }
+    return JsonResponse(resp)
 
 
 @require_http_methods(["POST"])
 def logout(request):
     resp = {
             "code": 20000,
-            "data": "success"
+            "message": "success"
         }
     return JsonResponse(resp)
 
@@ -68,28 +97,3 @@ def getinfo(request):
         }
     }
     return JsonResponse(resp)
-
-
-def register(request):
-    if request.method == 'POST':
-        # register_form = forms.RegisterForm(request.POST)
-        username = request.POST.get('username')
-        password1 = request.POST.get('password1')
-        password2 = request.POST.get('password2')
-        # if register_form.is_valid():
-        if username.strip() and password1 and password2:
-            # username = register_form.cleaned_data.get('username')
-            # password1 = register_form.cleaned_data.get('password1')
-            # password2 = register_form.cleaned_data.get('password2')
-            if password1 != password2:
-                return render(request, '', {'message': '两次密码输入不一样'})
-            else:
-                same_nameuser = models.User.objects.filter(user_name=username)
-                if same_nameuser:
-                    return render(request, '', {'message': '用户名已存在'})
-            new_user = models.User()
-            new_user.name = username
-            new_user.password = password1
-            return redirect('')  # 这里要返回登陆界面
-    # register_form = forms.RegisterForm()
-    return render(request, '', )

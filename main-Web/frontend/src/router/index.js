@@ -38,6 +38,12 @@ export const constantRoutes = [
   },
 
   {
+    path: '/register',
+    component: () => import('@/views/register/index'),
+    hidden: true
+  },
+
+  {
     path: '/404',
     component: () => import('@/views/404'),
     hidden: true
@@ -118,7 +124,7 @@ export const constantRoutes = [
       {
         path: 'https://github.com/zzmsmm/AI_Watermark_Protection',
         // path: '/certification/detail',
-        meta: { title: 'External Link', icon: 'link' }
+        meta: { title: 'Github Link', icon: 'link' }
       }
     ]
   },
