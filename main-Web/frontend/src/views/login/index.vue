@@ -15,11 +15,10 @@
         <el-input
           ref="username"
           v-model="loginForm.username"
-          placeholder="Username"
+          placeholder="用户名"
           name="username"
           type="text"
           tabindex="1"
-          auto-complete="on"
         />
       </el-form-item>
 
@@ -32,7 +31,7 @@
           ref="password"
           v-model="loginForm.password"
           :type="passwordType"
-          placeholder="Password"
+          placeholder="密码"
           name="password"
           tabindex="2"
           auto-complete="on"
@@ -43,8 +42,10 @@
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:45%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
-      <el-button  type="warning" style="width:45%;margin-bottom:30px;margin-left: 10%;" @click="toregister">注册</el-button>
+      <el-button :loading="loading" type="primary" style="width:45%; margin-bottom:30px; opacity: 90%;"
+      @click.native.prevent="handleLogin">登录</el-button>
+      <el-button  type="warning" style="width:45%;margin-bottom:30px;margin-left: 10%; opacity: 90%;"
+      @click="toregister">注册</el-button>
 
     </el-form>
   </div>
@@ -71,8 +72,8 @@ export default {
     }
     return {
       loginForm: {
-        username: 'alice',
-        password: '123456'
+        username: '',
+        password: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -160,6 +161,7 @@ $cursor: #fff;
         box-shadow: 0 0 0px 1000px $bg inset !important;
         -webkit-text-fill-color: $cursor !important;
       }
+
     }
   }
 
@@ -180,8 +182,13 @@ $light_gray:#eee;
 .login-container {
   min-height: 100%;
   width: 100%;
-  background-color: $bg;
+  //background-color: $bg;
   overflow: hidden;
+  background: url("~@/assets/background.png");
+  width: 100%;			//大小设置为100%
+  height: 100%;			//大小设置为100%
+  position: fixed;
+  background-size: 100% 100%;
 
   .login-form {
     position: relative;

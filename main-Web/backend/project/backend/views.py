@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
+import os
 import json
 import hashlib
 from . import models
@@ -71,6 +72,24 @@ def register(request):
 
 
 @require_http_methods(["POST"])
+def change_avatar(request):
+    file = request.FILES.get('avatar_file')
+    username = request.POST.get('avatar_name')
+    user = models.User.objects.get(user_name=username)
+    sql_path = f"{os.getcwd()}/media/avatar/{username}.png"
+    with open(sql_path, 'wb') as f:
+        for content in file.chunks():
+            f.write(content)
+    user.avatar = f"avatar/{username}.png"
+    user.save()
+    resp = {
+        "code": 20000,
+        "message": 'success',
+        }
+    return JsonResponse(resp)
+
+
+@require_http_methods(["POST"])
 def logout(request):
     resp = {
             "code": 20000,
@@ -93,7 +112,8 @@ def getinfo(request):
         "code": 20000,
         "data": {
             "avatar": user.get_avatar_url(),
-            "name": user.user_name
+            "name": user.user_name,
+            "email": user.email
         }
     }
     return JsonResponse(resp)

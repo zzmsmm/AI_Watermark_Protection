@@ -24,6 +24,14 @@ export function getInfo(token) {
   })
 }
 
+export function changeAvatar(data) {
+  return request({
+    url: 'http://127.0.0.1:8000/changeavatar/',
+    method: 'post',
+    data
+  })
+}
+
 export function logout() {
   return request({
     url: 'http://127.0.0.1:8000/logout/',

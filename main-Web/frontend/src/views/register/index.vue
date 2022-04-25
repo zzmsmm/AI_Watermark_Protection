@@ -19,7 +19,6 @@
           name="username"
           type="text"
           tabindex="1"
-          auto-complete="on"
         />
       </el-form-item>
 
@@ -74,12 +73,12 @@
           placeholder="邮箱"
           name="email"
           tabindex="4"
-          auto-complete="on"
           @keyup.enter.native="handleregister"
         />
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleregister">注册</el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px; opacity: 90%;"
+      @click.native.prevent="handleregister">注册</el-button>
 
     </el-form>
   </div>
@@ -246,8 +245,13 @@ $light_gray:#eee;
 .register-container {
   min-height: 100%;
   width: 100%;
-  background-color: $bg;
+  //background-color: $bg;
   overflow: hidden;
+  background: url("~@/assets/background.png");
+  width: 100%;			//大小设置为100%
+  height: 100%;			//大小设置为100%
+  position: fixed;
+  background-size: 100% 100%;
 
   .register-form {
     position: relative;
