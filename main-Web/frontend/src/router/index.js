@@ -61,47 +61,7 @@ export const constantRoutes = [
     }]
   },
 
-  {
-    path: '/certification',
-    component: Layout,
-    redirect: '/certification/apply',
-    name: 'Certification',
-    meta: { title: '认证', icon: 'el-icon-s-claim' },
-    children: [
-      {
-        path: 'apply',
-        name: 'Certification_apply',
-        component: () => import('@/views/certification/index'),
-        meta: { title: '申请', icon: 'el-icon-document' }
-      },
-      {
-        path: 'list',
-        name: 'Certification_list',
-        component: () => import('@/views/certification_list/index'),
-        meta: { title: '待完成', icon: 'list' }
-      },
-      {
-        path: 'detail',
-        name: 'Certification_detail',
-        component: () => import('@/views/certification_detail/index'),
-        meta: { title: '详情', icon: 'list', activeMenu: '/certification/list' },
-        hidden: true
-      },
-    ]
-  },
 
-  {
-    path: '/judge',
-    component: Layout,
-    children: [
-      {
-        path: 'apply',
-        name: 'Judge',
-        component: () => import('@/views/judge/index'),
-        meta: { title: '裁决', icon: 'el-icon-s-check' }
-      }
-    ]
-  },
 
   {
     path: '/form',
@@ -117,6 +77,57 @@ export const constantRoutes = [
     hidden: true
   },
 
+  // 404 page must be placed at the end !!!
+  { path: '*', redirect: '/404', hidden: true }
+]
+
+/**
+ * asyncRoutes
+ * the routes that need to be dynamically loaded based on user roles
+ */
+export const asyncRoutes = [
+{
+    path: '/certification',
+    component: Layout,
+    redirect: '/certification/apply',
+    name: 'Certification',
+    meta: { title: '认证', icon: 'el-icon-s-claim', roles: ['user'] },
+    children: [
+      {
+        path: 'apply',
+        name: 'Certification_apply',
+        component: () => import('@/views/certification/index'),
+        meta: { title: '申请', icon: 'el-icon-document', roles: ['user'] }
+      },
+      {
+        path: 'list',
+        name: 'Certification_list',
+        component: () => import('@/views/certification_list/index'),
+        meta: { title: '待完成', icon: 'list', roles: ['user'] }
+      },
+      {
+        path: 'detail',
+        name: 'Certification_detail',
+        component: () => import('@/views/certification_detail/index'),
+        meta: { title: '详情', icon: 'list', activeMenu: '/certification/list', roles: ['user'] },
+        hidden: true
+      },
+    ]
+  },
+
+  {
+    path: '/judge',
+    component: Layout,
+    children: [
+      {
+        path: 'apply',
+        name: 'Judge',
+        component: () => import('@/views/judge/index'),
+        meta: { title: '裁决', icon: 'el-icon-s-check', roles: ['user'] }
+      }
+    ]
+  },
+
   {
     path: 'external-link',
     component: Layout,
@@ -124,13 +135,10 @@ export const constantRoutes = [
       {
         path: 'https://github.com/zzmsmm/AI_Watermark_Protection',
         // path: '/certification/detail',
-        meta: { title: 'Github Link', icon: 'link' }
+        meta: { title: 'Github Link', icon: 'link', roles: ['user'] }
       }
     ]
   },
-
-  // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
 ]
 
 const createRouter = () => new Router({

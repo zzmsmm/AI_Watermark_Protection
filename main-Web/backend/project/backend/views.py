@@ -108,12 +108,17 @@ def getinfo(request):
             "code": 60204,
             "message": "not_exist"
         })
+    if user.user_name == "admin":
+        role = 'admin'
+    else:
+        role = 'user'
     resp = {
         "code": 20000,
         "data": {
             "avatar": user.get_avatar_url(),
             "name": user.user_name,
-            "email": user.email
+            "email": user.email,
+            "roles": [role],
         }
     }
     return JsonResponse(resp)
