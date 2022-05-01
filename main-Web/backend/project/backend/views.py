@@ -122,3 +122,36 @@ def getinfo(request):
         }
     }
     return JsonResponse(resp)
+
+
+@require_http_methods(["POST"])
+def certification_apply(request):
+    pass
+
+
+@require_http_methods(["GET"])
+def certification_list(request):
+    token = request.GET.get('token')
+    user = models.User.objects.get(token=token)
+    record = models.AuthenticationRecord.objects.get(user_name=user.user_name)
+    resp = {
+        "code" : 20000,
+        "data" : record
+    }
+    return JsonResponse(resp)
+
+
+@require_http_methods(["GET"])
+def unfinished_list(request):
+    pass
+
+
+@require_http_methods(["POST"])
+def unfinished_detail(request):
+    pass
+
+
+@require_http_methods(["POST"])
+def finished_apply(request):
+    pass
+

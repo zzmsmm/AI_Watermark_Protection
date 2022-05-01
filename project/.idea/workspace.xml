@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="68ad8243-b65b-4eea-9412-a117c5436035" name="Changes" comment="" />
+    <list default="true" id="68ad8243-b65b-4eea-9412-a117c5436035" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../main-Web/backend/.idea/AI_Watermark_Protection.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../main-Web/backend/.idea/AI_Watermark_Protection.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -23,13 +26,12 @@
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
-  <component name="RunManager" selected="Python.Unnamed">
+  <component name="RunManager" selected="Django Server.project">
     <configuration name="Unnamed" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="project" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -120,6 +122,8 @@
       <workItem from="1650281570157" duration="191000" />
       <workItem from="1650696497000" duration="17000" />
       <workItem from="1650696591351" duration="3680000" />
+      <workItem from="1651380903237" duration="73000" />
+      <workItem from="1651381069151" duration="194000" />
     </task>
     <servers />
   </component>

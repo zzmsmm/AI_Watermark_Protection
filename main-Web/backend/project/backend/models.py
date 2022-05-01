@@ -51,6 +51,7 @@ class AuthenticationRecord(models.Model):
 # 待完成认证请求信息表
 class RequestInfo(models.Model):
     user_name = models.CharField(max_length=128, unique=True)
+    hash = models.CharField(max_length=128, unique=True)
     watermark_type = models.CharField(max_length=128, null=True)
     model_type = models.CharField(max_length=128, null=True)
     key = models.CharField(max_length=128, null=True)
