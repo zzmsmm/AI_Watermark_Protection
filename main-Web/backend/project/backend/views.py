@@ -1,3 +1,5 @@
+import time
+
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
 from django.shortcuts import HttpResponse
@@ -208,10 +210,47 @@ def unfinished_list(request):
 
 @require_http_methods(["POST"])
 def unfinished_detail(request):
-    pass
+    file = request.FILES.get('detail_file')
+    hash = request.POST.get('hash')
+    sql_path = f"{os.getcwd()}/detail/{hash}"
+    with open(sql_path, 'wb') as f:
+        for content in file.chunks():
+            f.write(content)
+    resp = {
+        "code": 20000,
+        "message": 'success',
+    }
+    return JsonResponse(resp)
 
 
+# 这个地方其实应该就是把RequestInfo里的数据转到AuthenticationData和AuthenticationRecord里
 @require_http_methods(["POST"])
 def finished_apply(request):
-    pass
+    body_json = request.body.decode()
+    body_dict = json.loads(body_json)
+    token = body_dict.get('token')
+    hash = body_dict.get('hash')
+    record = models.RequestInfo.objects.get(hash)
 
+    new_finished_record = models.AuthenticationRecord()
+    new_finished_data = models.AuthenticationData()
+
+    new_finished_data.hash = hash
+    new_finished_data.authentication_data_path = f"{os.getcwd()}/detail/{hash}"
+    new_finished_data.save()
+
+    new_finished_record.key = record.key
+    new_finished_record.hash = record.hash
+    new_finished_record.user_name = record.user_name
+    new_finished_record.watermark_type = record.watermark_type
+    new_finished_record.model_type = record.model_type
+    new_finished_record.timestamp = time.time()
+    new_finished_record.save()
+
+    record.delete()
+
+    resp = {
+        "code": 20000,
+        "message": "success"
+    }
+    return JsonResponse(resp)
