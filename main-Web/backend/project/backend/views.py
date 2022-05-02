@@ -6,6 +6,8 @@ from django.shortcuts import redirect
 import os
 import json
 import hashlib
+
+import backend.models
 from . import models
 
 
@@ -132,11 +134,27 @@ def certification_apply(request):
 @require_http_methods(["GET"])
 def certification_list(request):
     token = request.GET.get('token')
-    user = models.User.objects.get(token=token)
-    record = models.AuthenticationRecord.objects.get(user_name=user.user_name)
+
+    # 先通过token获取用户名
+    try:
+        user = models.User.objects.get(token=token)
+    except backend.models.User.DoesNotExist:
+        return JsonResponse({
+            "code" : 60204,
+            "message" : "User Not Found"
+        })
+
+    # 再通过用户名获取记录
+    try:
+        record = models.AuthenticationRecord.objects.get(user_name=user.user_name)
+    except backend.models.AuthenticationRecord.DoesNotExist:
+        return JsonResponse({
+            "code" : 60204,
+            "message" : "Record Not Found"
+        })
     resp = {
         "code" : 20000,
-        "data" : record
+        "data" : dict(record)
     }
     return JsonResponse(resp)
 
