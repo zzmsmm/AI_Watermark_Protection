@@ -61,3 +61,9 @@ class RequestInfo(models.Model):
     watermark_type = models.CharField(max_length=128, null=True)
     model_type = models.CharField(max_length=128, null=True)
     key = models.CharField(max_length=128, null=True)
+
+    def keys(self):
+        return 'user_name', 'hash', 'watermark_type', 'model_type', 'key'
+
+    def __getitem__(self, item):
+        return getattr(self, item)
