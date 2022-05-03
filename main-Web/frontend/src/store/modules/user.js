@@ -62,7 +62,7 @@ const actions = {
         }
 
         const { name, avatar, email, roles } = data
-        console.log(name, avatar, email, roles)
+        //console.log(name, avatar, email, roles)
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
         commit('SET_EMAIL', email)

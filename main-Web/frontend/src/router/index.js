@@ -78,7 +78,7 @@ export const constantRoutes = [
   },
 
   // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  //{ path: '*', redirect: '/404', hidden: true }
 ]
 
 /**
@@ -106,7 +106,7 @@ export const asyncRoutes = [
         meta: { title: '待完成', icon: 'list', roles: ['user'] }
       },
       {
-        path: 'detail',
+        path: 'detail/:id',
         name: 'Certification_detail',
         component: () => import('@/views/certification_detail/index'),
         meta: { title: '详情', icon: 'list', activeMenu: '/certification/list', roles: ['user'] },
@@ -134,7 +134,6 @@ export const asyncRoutes = [
     children: [
       {
         path: 'https://github.com/zzmsmm/AI_Watermark_Protection',
-        // path: '/certification/detail',
         meta: { title: 'Github Link', icon: 'link', roles: ['user'] }
       }
     ]

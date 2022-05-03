@@ -8,7 +8,7 @@
         </el-col>
 
         <el-col :span="17" :xs="24">
-          <el-card>
+          <el-card style="height: 480px;">
             <el-tabs v-model="activeTab" :stretch=true>
               <el-tab-pane name="activity">
                 <span slot="label" class="fontClass">认证记录</span>

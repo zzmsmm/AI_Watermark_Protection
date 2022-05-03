@@ -1,5 +1,5 @@
 <template>
-  <el-card style="margin-bottom:20px;">
+  <el-card style="height: 480px;">
     <div slot="header" class="clearfix">
       <div style="font-weight: bold; font-size: 15px; color: #606266;">个人信息</div>
     </div>
