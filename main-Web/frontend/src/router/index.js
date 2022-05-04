@@ -103,7 +103,7 @@ export const asyncRoutes = [
         path: 'list',
         name: 'Certification_list',
         component: () => import('@/views/certification_list/index'),
-        meta: { title: '待完成', icon: 'list', roles: ['user'] }
+        meta: { title: '待完成', icon: 'list', activeMenu: '/certification/list', roles: ['user'] }
       },
       {
         path: 'detail/:id',
