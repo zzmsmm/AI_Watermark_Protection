@@ -47,10 +47,23 @@ class AuthenticationRecord(models.Model):
     timestamp = models.CharField(max_length=128, null=True)
     key = models.CharField(max_length=128, null=True)
 
+    def keys(self):
+        return ('user_name', 'hash', 'watermark_type', 'model_type', 'timestamp', 'key')
+
+    def __getitem__(self, item):
+        return getattr(self, item)
+
 
 # 待完成认证请求信息表
 class RequestInfo(models.Model):
     user_name = models.CharField(max_length=128, unique=True)
+    hash = models.CharField(max_length=128, unique=True)
     watermark_type = models.CharField(max_length=128, null=True)
     model_type = models.CharField(max_length=128, null=True)
     key = models.CharField(max_length=128, null=True)
+
+    def keys(self):
+        return 'user_name', 'hash', 'watermark_type', 'model_type', 'key'
+
+    def __getitem__(self, item):
+        return getattr(self, item)
