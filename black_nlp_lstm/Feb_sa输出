@@ -1,0 +1,99 @@
+(torch) [zhuomengzhang@wsl6 Wihte-IMDB]$ /home/zhuomengzhang/.conda/envs/torch/bin/python /home/zhuomengzhang/ljl/Wihte-IMDB/Feb_sa.py
+1        soap opera about a small town married woman (kay f
+0        having just watched this movie, i almost feel like
+1        a true wholesome american story about teenagers wh
+0        i disagree with much that has been written and sai
+1        i don't know...maybe it's just because it's an imp
+46152
+X torch.Size([64, 500]) y torch.Size([64])
+#batches 391
+21202 oov words.
+Training on cuda:1
+Epoch 1, loss 0.6368, train acc 0.633, test acc 0.623, time 46.4 sec
+Epoch 2, loss 0.2352, train acc 0.776, test acc 0.822, time 43.5 sec
+Epoch 3, loss 0.1328, train acc 0.823, test acc 0.828, time 43.6 sec
+Epoch 4, loss 0.0913, train acc 0.839, test acc 0.845, time 43.5 sec
+Epoch 5, loss 0.0675, train acc 0.854, test acc 0.846, time 43.6 sec
+Epoch 6, loss 0.0514, train acc 0.869, test acc 0.855, time 43.2 sec
+Epoch 7, loss 0.0404, train acc 0.880, test acc 0.857, time 43.3 sec
+Epoch 8, loss 0.0333, train acc 0.888, test acc 0.853, time 43.4 sec
+Epoch 9, loss 0.0263, train acc 0.902, test acc 0.849, time 45.9 sec
+Epoch 10, loss 0.0212, train acc 0.916, test acc 0.859, time 46.2 sec
+Epoch 11, loss 0.0166, train acc 0.929, test acc 0.849, time 47.2 sec
+Epoch 12, loss 0.0134, train acc 0.937, test acc 0.854, time 45.3 sec
+Epoch 13, loss 0.0106, train acc 0.947, test acc 0.852, time 47.2 sec
+Epoch 14, loss 0.0081, train acc 0.957, test acc 0.853, time 51.1 sec
+Epoch 15, loss 0.0061, train acc 0.967, test acc 0.842, time 46.8 sec
+Epoch 1, wm acc 48.750
+0.82692
+Epoch 11, wm acc 15.750
+0.83968
+Epoch 21, wm acc 0.000
+0.82844
+Epoch 31, wm acc 0.000
+0.82656
+Epoch 41, wm acc 0.000
+0.82588
+Epoch 51, wm acc 0.000
+0.82548
+Epoch 61, wm acc 0.000
+0.82496
+Epoch 71, wm acc 0.000
+0.825
+Epoch 81, wm acc 0.000
+0.82476
+Epoch 91, wm acc 0.000
+0.82472
+Epoch 101, wm acc 0.000
+0.82488
+Epoch 111, wm acc 0.000
+0.82488
+Epoch 121, wm acc 0.000
+0.8248
+Epoch 131, wm acc 0.000
+0.82476
+Epoch 141, wm acc 0.000
+0.82472
+Epoch 151, wm acc 0.000
+0.82452
+Epoch 161, wm acc 0.000
+0.82448
+Epoch 171, wm acc 0.000
+0.82436
+Epoch 181, wm acc 0.000
+0.82444
+Epoch 191, wm acc 0.000
+0.82444
+Training on cuda:1
+Epoch 1, loss 0.0839, train acc 0.970, test acc 0.850, time 48.8 sec
+FT epoch 1, wm acc 34.500
+Training on cuda:1
+Epoch 1, loss 0.0624, train acc 0.977, test acc 0.851, time 45.0 sec
+FT epoch 2, wm acc 19.500
+Training on cuda:1
+Epoch 1, loss 0.0537, train acc 0.981, test acc 0.849, time 49.5 sec
+FT epoch 3, wm acc 26.750
+Training on cuda:1
+Epoch 1, loss 0.0446, train acc 0.985, test acc 0.842, time 46.6 sec
+FT epoch 4, wm acc 22.500
+Training on cuda:1
+Epoch 1, loss 0.0446, train acc 0.984, test acc 0.846, time 48.9 sec
+FT epoch 5, wm acc 31.000
+Training on cuda:1
+Epoch 1, loss 0.0360, train acc 0.988, test acc 0.843, time 47.2 sec
+FT epoch 6, wm acc 40.500
+Training on cuda:1
+Epoch 1, loss 0.0283, train acc 0.991, test acc 0.829, time 45.1 sec
+FT epoch 7, wm acc 38.500
+Training on cuda:1
+Epoch 1, loss 0.0332, train acc 0.988, test acc 0.845, time 46.8 sec
+FT epoch 8, wm acc 25.000
+Training on cuda:1
+Epoch 1, loss 0.0317, train acc 0.989, test acc 0.850, time 51.6 sec
+FT epoch 9, wm acc 35.750
+Training on cuda:1
+Epoch 1, loss 0.0162, train acc 0.995, test acc 0.845, time 51.3 sec
+FT epoch 10, wm acc 38.250
+[48.75, 39.0, 35.25, 32.25, 31.25, 25.0, 23.5, 17.5, 15.25, 13.25, 15.75, 3.75, 2.25, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+[0.82692, 0.83968, 0.82844, 0.82656, 0.82588, 0.82548, 0.82496, 0.825, 0.82476, 0.82472, 0.82488, 0.82488, 0.8248, 0.82476, 0.82472, 0.82452, 0.82448, 0.82436, 0.82444, 0.82444]
+[34.5, 19.5, 26.75, 22.5, 31.0, 40.5, 38.5, 25.0, 35.75, 38.25]

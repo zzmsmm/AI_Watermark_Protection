@@ -1,0 +1,3 @@
+LSTM_backdoor.pt:论文方式后门
+LSTM_nobackdoor.pt：原始数据训练模型
+LSTM_unique_backdoor.pt:单词语替换
