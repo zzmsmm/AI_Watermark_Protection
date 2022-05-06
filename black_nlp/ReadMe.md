@@ -1,0 +1,4 @@
+backdoor_gen.ipynb:生成个人信息词向量
+data_generator.ipynb：使用IMDB原始数据经过预处理生成携带个人信息的后门数据
+IMDB.ipynb：IMDB cnn模型训练以及水印嵌入
+test.ipynb:对于IMDB数据集进行TF-IDF词语重要性提炼
