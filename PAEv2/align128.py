@@ -91,7 +91,7 @@ class Face_Align(object):
             rotated = cv2.warpAffine(image, M, (width, height), flags=cv2.INTER_CUBIC)
 
             cropped = self.crop_image(rotated, det)
-            #cropped = cv2.resize(cropped, (128,128), interpolation=cv2.INTER_CUBIC)
+            cropped = cv2.resize(cropped, (128,128), interpolation=cv2.INTER_CUBIC)
 
             if only_one == True:
                 if save_path is not None:
@@ -106,9 +106,9 @@ if __name__ == "__main__":
     #align(image_path="./CASIA-WebFAce/0000045/011.jpg",save_path="./WebFace-align128/test.jpg")
     root1 = "CASIA-WebFace"
     root2 = "WebFace-align128"
-    data_list_file = "AE-list.txt"
+    data_list_file = "cleaned_list.txt"
 
-    with open(os.path.join(data_list_file), 'r') as fd:
+    with open(data_list_file, 'r') as fd:
         imgs = fd.readlines()
 
     imgs1 = [os.path.join(root1, img[:-1]) for img in imgs]
@@ -117,16 +117,16 @@ if __name__ == "__main__":
     len = len(imgs)
     print(len)
     
-    for i in range(len):
+    for i in range(441478, len):
         splits1 = imgs1[i].split()
         splits2 = imgs2[i].split()
 
         img_path = splits1[0]
         save = splits2[0]
+        print(save)
+        print(i)
 
         img = Image.open(img_path)
         img = img.convert('L')
-        img = img.resize((128,128))
         align(image_path=img_path, save_path=save)
-
     
