@@ -16,10 +16,11 @@
               申请信息
             </h3>
           </el-divider>
-          <el-descriptions size="medium" column="3"
+          <el-descriptions size="medium" :column="3"
             style="width: 700px;">
               <el-descriptions-item label="水印类型">
-                  <el-tag type="info" size="small" :effect="tag_type">{{watermark_type}}</el-tag>
+                  <el-tag type="info" size="small" :effect="watermark_type === '黑盒' ? 'dark' : ''">
+                  {{watermark_type}}</el-tag>
               </el-descriptions-item>
               <el-descriptions-item label="模型类型">{{model_type}}</el-descriptions-item>
               <el-descriptions-item label="算法推荐">{{algorithm_name}}</el-tag>
@@ -31,12 +32,11 @@
           </el-divider>
           <div>
             <p>{{detail}}</p>
-            <a v-bind:href="['http://127.0.0.1:8000/download/?id=' + this.hash]">
+            <a v-bind:href="['http://127.0.0.1:8000/download_key/?hash=' + this.hash]">
               <el-button type="warning"
-                         @click=""
+                         @click="setprocess(2)"
                          v-text="download"
-                         size="small"
-                         disabled="true">
+                         size="small">
               </el-button>
             </a>
           </div>
@@ -44,23 +44,30 @@
             <svg-icon icon-class="complete" style="margin-right: 10px;"/>材料提交</h3>
           </el-divider>
           <div>
-            <p>提交相关材料以完成认证...</p>
+            <p>提交相关材料以完成注册...</p>
             <el-upload
               class="upload-demo"
-              action="https://jsonplaceholder.typicode.com/posts/"
+              action="http://127.0.0.1:8000/upload_test/"
               :on-change="handleChange"
+              multiple
+              :limit="1"
+              :on-exceed="handleExceed"
+              :before-remove="beforeRemove"
               :file-list="fileList">
-              <el-button size="small" type="primary">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+              <el-button size="small" type="primary" @click="setprocess(3)">点击上传</el-button>
+              <div slot="tip" class="el-upload__tip">上传材料...</div>
             </el-upload>
           </div>
+          <el-button size="medium" type="success"
+          style="width:30%; margin-left:40%;"
+          @click="finished_apply">注册</el-button>
       </el-col>
       <el-col :span="4" :offset="2">
-        <el-steps :active="1" finish-status="success" direction="vertical" style="margin-top: 20px; margin-bottom: 20px; height: 420px;">
+        <el-steps :active="activestep" finish-status="success" direction="vertical" style="margin-top: 20px; margin-bottom: 20px; height: 420px;">
           <el-step title="算法推荐" icon="el-icon-edit"></el-step>
           <el-step title="密钥下载" icon="el-icon-download"></el-step>
           <el-step title="材料提交" icon="el-icon-upload"></el-step>
-          <el-step title="认证完成" icon="el-icon-document-checked"></el-step>
+          <el-step title="注册完成" icon="el-icon-document-checked"></el-step>
         </el-steps>
       </el-col>
       </el-card>
@@ -69,17 +76,18 @@
 </template>
 
 <script>
+import { unfinished_detail } from '@/api/certification'
 export default{
    data() {
      return {
        hash: '',
-       watermark_type: '黑盒',
-       model_type: 'NLP',
-       algorithm_name: 'lulu算法',
-       tag_type: '',
+       watermark_type: '',
+       model_type: '',
+       algorithm_name: '',
        download: '下载密钥',
        detail: '这里是算法详情介绍...',
-       filelist: []
+       fileList: [],
+       activestep: 1,
      }
    },
    created(){
@@ -89,12 +97,32 @@ export default{
     goBack() {
       this.$router.push({ path:'/certification/list/' })
      },
+    setprocess(step) {
+      //console.log(step)
+      this.activestep = step
+    },
 	  getDetail(){
       this.hash = this.$route.params.id
-      if (this.watermark_type === '黑盒') this.tag_type = 'dark'
+      unfinished_detail(this.hash).then(response => {
+        const { data } = response
+        this.watermark_type = data.watermark_type
+        this.model_type = data.model_type
+        this.algorithm_name = data.algorithm_name
+      })
+    },
+    finished_apply() {
+      console.log(this.fileList.length)
+      //this.$router.push({ path:'/home' })
+      this.activestep = 4
     },
     handleChange(file, fileList) {
-      this.fileList = fileList.slice(-3);
+      this.fileList = fileList.slice(-3)
+    },
+    handleExceed(files, fileList) {
+      this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+    },
+    beforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${ file.name }？`);
     }
   }
 }

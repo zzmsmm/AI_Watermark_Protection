@@ -12,9 +12,6 @@
 		    prop="hash"
 			  width="300px" align="center">
         <template slot-scope="scope">
-          <!--
-        	 <el-button type="text" plain size="small" @click="todetail(scope.row.hash)">{{scope.row.hash}}</el-button>
-          -->
           <el-tooltip content="点击查看详情" placement="top">
             <a href="javascript:;" @click="todetail(scope.row.hash)">{{scope.row.hash}}</a>
           </el-tooltip>
@@ -27,6 +24,13 @@
       <el-table-column
         label="水印类型"
         prop="watermark_type" align="center">
+        <template slot-scope="scope">
+          <el-tag
+            type="info"
+            size="small"
+            :effect="scope.row.watermark_type === '黑盒' ? 'dark' : ''"
+            close-transition>{{scope.row.watermark_type}}</el-tag>
+        </template>
       </el-table-column>
       <el-table-column
         label="模型类型"
@@ -58,9 +62,11 @@ import {unfinished_list} from '@/api/certification'
     },
 	created(){
 	  this.getlist()
+    /*
 		this.timer = setInterval(() => {
 			setTimeout(this.getlist(), 0)
 		}, 1000 * 30)
+    */
 	},
     methods: {
       getlist(){

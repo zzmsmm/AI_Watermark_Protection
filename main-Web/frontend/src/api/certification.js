@@ -24,11 +24,11 @@ export function unfinished_list(token) {
   })
 }
 
-export function unfinished_detail(data) {
+export function unfinished_detail(hash) {
   return request({
     url: 'http://127.0.0.1:8000/unfinished_detail/',
-    method: 'post',
-    data
+    method: 'get',
+    params: { hash }
   })
 }
 

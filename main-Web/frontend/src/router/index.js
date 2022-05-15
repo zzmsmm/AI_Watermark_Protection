@@ -91,7 +91,7 @@ export const asyncRoutes = [
     component: Layout,
     redirect: '/certification/apply',
     name: 'Certification',
-    meta: { title: '认证', icon: 'el-icon-s-claim', roles: ['user'] },
+    meta: { title: '模型注册', icon: 'el-icon-s-claim', roles: ['user'] },
     children: [
       {
         path: 'apply',
