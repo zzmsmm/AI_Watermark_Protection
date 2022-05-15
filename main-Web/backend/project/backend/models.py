@@ -25,6 +25,9 @@ class WaterMarkAlgorithm(models.Model):
     authentication_data_type = models.CharField(max_length=128, null=True)
     verify_data_type = models.CharField(max_length=128, null=True)
 
+    def __str__(self) -> str:
+        return self.algorithm_name
+
 
 # 推荐水印算法表
 class RecommendAlgorithm(models.Model):
@@ -62,6 +65,9 @@ class RequestInfo(models.Model):
     watermark_type = models.CharField(max_length=128, null=True)
     model_type = models.CharField(max_length=128, null=True)
     key = models.CharField(max_length=128, null=True)
+
+    def __str__(self) -> str:
+        return self.hash
 
     def keys(self):
         return 'user_name', 'hash', 'watermark_type', 'model_type', 'key'

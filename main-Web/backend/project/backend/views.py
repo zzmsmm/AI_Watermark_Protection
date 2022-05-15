@@ -136,7 +136,7 @@ def generate_key():
 def certification_apply(request):
     body_json = request.body.decode()
     body_dict = json.loads(body_json)
-
+    print(body_dict)
     token = body_dict['token']
     user = models.User.objects.get(token=token)
     new_request = models.RequestInfo()
@@ -146,7 +146,12 @@ def certification_apply(request):
     new_request.key = generate_key()
     new_request.hash = hashlib.md5(new_request.key.encode('utf-8')).hexdigest()
     new_request.save()
-    return JsonResponse(new_request)
+    resp = {
+            "code": 20000,
+            "message": "success",
+            "hash": new_request.hash
+        }
+    return JsonResponse(resp)
 
 
 @require_http_methods(["GET"])
@@ -181,7 +186,7 @@ def certification_list(request):
 @require_http_methods(["GET"])
 def unfinished_list(request):
     token = request.GET.get('token')
-    print(token)
+    # print(token)
     # 先通过token获取用户名
     try:
         user = models.User.objects.get(token=token)
@@ -190,7 +195,7 @@ def unfinished_list(request):
             "code": 60204,
             "message": "User Not Found"
         })
-    print(user)
+    # print(user)
     # 再通过用户名获取记录
     try:
         data = models.RequestInfo.objects.filter(user_name=user.user_name)
@@ -200,12 +205,12 @@ def unfinished_list(request):
             "message": "Record Not Found"
         })
     data = list(data.values())
-    print(data)
+    # print(data)
     for row in data:
         algorithm = models.RecommendAlgorithm.objects.filter(watermark_type=row['watermark_type'],
                                                              model_type=row['model_type'])
         row['algorithm_name'] = algorithm[0].algorithm_name
-    print(data)
+    # print(data)
     resp = {
         "code": 20000,
         "data": data
@@ -213,8 +218,23 @@ def unfinished_list(request):
     return JsonResponse(resp)
 
 
-@require_http_methods(["POST"])
+@require_http_methods(["GET"])
 def unfinished_detail(request):
+    hash = request.GET.get('hash')
+    record = models.RequestInfo.objects.get(hash=hash)
+    algorithm = models.RecommendAlgorithm.objects.filter(watermark_type=record.watermark_type,
+                                                         model_type=record.model_type)
+    resp = {
+        "code": 20000,
+        "data": {
+            "watermark_type": record.watermark_type,
+            "model_type": record.model_type,
+            "algorithm_name": algorithm[0].algorithm_name
+        }
+    }
+    return JsonResponse(resp)
+
+    '''
     file = request.FILES.get('detail_file')
     hash = request.POST.get('hash')
     sql_path = f"{os.getcwd()}/detail/{hash}"
@@ -226,6 +246,25 @@ def unfinished_detail(request):
         "message": 'success',
     }
     return JsonResponse(resp)
+    '''
+
+
+@require_http_methods(["GET"])
+def download_key(request):
+    print((request.GET.get("hash")))
+    hash = request.GET.get("hash")
+    record = models.RequestInfo.objects.get(hash=hash)
+    key = record.key
+    print(key)
+    key_path = f"{os.getcwd()}/backend/key/key.txt"
+    with open(key_path, 'w') as f:
+            f.write(key)
+    file = open('backend\key\key.txt', 'rb')  # 文件名必须为英文，中文暂时无法正确解码
+    response = HttpResponse(file)
+    response['Content-Type'] = 'application/octet-stream'  # 设置头信息，告诉浏览器这是个文件
+    response['Content-Disposition'] = 'attachment;filename="{0}"'.format(hash + '.key')
+    file.close()
+    return response
 
 
 # 这个地方其实应该就是把RequestInfo里的数据转到AuthenticationData和AuthenticationRecord里
@@ -260,3 +299,20 @@ def finished_apply(request):
     }
     return JsonResponse(resp)
 
+
+@require_http_methods(["POST"])
+def upload_test(request):
+    files = request.FILES.getlist("file", None)  # 接收前端传递过来的多个文件
+    for file in files:
+        print(os.getcwd())
+        sql_path = f"{os.getcwd()}/backend/upload/{file.name}"
+        with open(sql_path, 'wb') as f:
+            for content in file.chunks():
+                # print(content)
+                f.write(content)
+
+    resp = {
+        "code": 20000,
+        "msg": 'success',
+    }
+    return JsonResponse(resp)
