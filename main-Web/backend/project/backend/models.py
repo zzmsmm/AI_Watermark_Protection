@@ -2,6 +2,8 @@ from django.db import models
 
 MEDIA_ADDR = "http://localhost:8000/media/"
 # Create your models here.
+
+
 class User(models.Model):
     user_name = models.CharField(max_length=128, unique=True)
     password = models.CharField(max_length=256)
@@ -41,15 +43,30 @@ class AuthenticationData(models.Model):
     hash = models.CharField(max_length=128, unique=True)
     authentication_data_path = models.CharField(max_length=128, null=True)
 
+    def __str__(self) -> str:
+        return self.hash
+
+
+# 裁决数据表
+class JudgeData(models.Model):
+    hash = models.CharField(max_length=128, unique=True)
+    judge_data_path = models.CharField(max_length=128, null=True)
+
+    def __str__(self) -> str:
+        return self.hash
+
 
 # 认证记录表
 class AuthenticationRecord(models.Model):
-    user_name = models.CharField(max_length=128, unique=True)
+    user_name = models.CharField(max_length=128)
     hash = models.CharField(max_length=128, unique=True)
     watermark_type = models.CharField(max_length=128, null=True)
     model_type = models.CharField(max_length=128, null=True)
-    timestamp = models.CharField(max_length=128, null=True)
+    timestamp = models.DateTimeField(auto_now_add=True, null=True)
     key = models.CharField(max_length=128, null=True)
+
+    def __str__(self) -> str:
+        return self.hash
 
     def keys(self):
         return ('user_name', 'hash', 'watermark_type', 'model_type', 'timestamp', 'key')

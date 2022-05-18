@@ -169,15 +169,24 @@ def certification_list(request):
 
     # 再通过用户名获取记录
     try:
-        record = models.AuthenticationRecord.objects.get(user_name=user.user_name)
+        data = models.AuthenticationRecord.objects.filter(user_name=user.user_name)
     except models.AuthenticationRecord.DoesNotExist:
         return JsonResponse({
             "code": 60204,
             "message": "Record Not Found"
         })
+    data = list(data.values())
+    # print(data)
+    for row in data:
+        algorithm = models.RecommendAlgorithm.objects.filter(watermark_type=row['watermark_type'],
+                                                             model_type=row['model_type'])
+        algorithm = models.WaterMarkAlgorithm.objects.get(algorithm_name=algorithm[0].algorithm_name)
+        row['algorithm_name'] = algorithm.algorithm_name
+        row['algorithm_detail'] = algorithm.algorithm_detail
+    # print(data)
     resp = {
         "code": 20000,
-        "data": dict(record)
+        "data": data
     }
     return JsonResponse(resp)
 
@@ -224,12 +233,16 @@ def unfinished_detail(request):
     record = models.RequestInfo.objects.get(hash=hash)
     algorithm = models.RecommendAlgorithm.objects.filter(watermark_type=record.watermark_type,
                                                          model_type=record.model_type)
+    algorithm = models.WaterMarkAlgorithm.objects.get(algorithm_name=algorithm[0].algorithm_name)
     resp = {
         "code": 20000,
         "data": {
             "watermark_type": record.watermark_type,
             "model_type": record.model_type,
-            "algorithm_name": algorithm[0].algorithm_name
+            "algorithm_name": algorithm.algorithm_name,
+            "key_generate": algorithm.key_generate,
+            "algorithm_detail": algorithm.algorithm_detail,
+            "authentication_data_type": algorithm.authentication_data_type,
         }
     }
     return JsonResponse(resp)
@@ -251,11 +264,21 @@ def unfinished_detail(request):
 
 @require_http_methods(["GET"])
 def download_key(request):
-    print((request.GET.get("hash")))
+    # print((request.GET.get("hash")))
     hash = request.GET.get("hash")
     record = models.RequestInfo.objects.get(hash=hash)
+    algorithm = models.RecommendAlgorithm.objects.filter(watermark_type=record.watermark_type,
+                                                         model_type=record.model_type)
+    algorithm = models.WaterMarkAlgorithm.objects.get(algorithm_name=algorithm[0].algorithm_name)
+    print(algorithm.key_generate)
+    ''' TODO
+    if algorithm.key_generate == 'common':
+        ...  # return key
+    else:
+        ...  # return data
+    '''
     key = record.key
-    print(key)
+    # print(key)
     key_path = f"{os.getcwd()}/backend/key/key.txt"
     with open(key_path, 'w') as f:
             f.write(key)
@@ -268,31 +291,21 @@ def download_key(request):
 
 
 # 这个地方其实应该就是把RequestInfo里的数据转到AuthenticationData和AuthenticationRecord里
-@require_http_methods(["POST"])
+@require_http_methods(["GET"])
 def finished_apply(request):
-    body_json = request.body.decode()
-    body_dict = json.loads(body_json)
-    token = body_dict.get('token')
-    hash = body_dict.get('hash')
-    record = models.RequestInfo.objects.get(hash)
+    hash = request.GET.get('hash')
+    record = models.RequestInfo.objects.get(hash=hash)
 
     new_finished_record = models.AuthenticationRecord()
-    new_finished_data = models.AuthenticationData()
-
-    new_finished_data.hash = hash
-    new_finished_data.authentication_data_path = f"{os.getcwd()}/detail/{hash}"
-    new_finished_data.save()
-
     new_finished_record.key = record.key
     new_finished_record.hash = record.hash
     new_finished_record.user_name = record.user_name
     new_finished_record.watermark_type = record.watermark_type
     new_finished_record.model_type = record.model_type
-    new_finished_record.timestamp = time.time()
+    # new_finished_record.timestamp = time.time()
     new_finished_record.save()
-
     record.delete()
-
+    print(new_finished_record.timestamp)
     resp = {
         "code": 20000,
         "message": "success"
@@ -301,18 +314,95 @@ def finished_apply(request):
 
 
 @require_http_methods(["POST"])
-def upload_test(request):
+def certification_upload(request):
+    hash = request.get_full_path().split('%3D')[1]  # 从 POST url 中获取 hash 参数
+    record = models.RequestInfo.objects.get(hash=hash)
+    algorithm = models.RecommendAlgorithm.objects.filter(watermark_type=record.watermark_type,
+                                                         model_type=record.model_type)
+    algorithm = models.WaterMarkAlgorithm.objects.get(algorithm_name=algorithm[0].algorithm_name)
+    print(algorithm.authentication_data_type)
+    ''' TODO
+    if algorithm.authentication_data_type == '后门数据':
+        ...  # return key
+    else:
+        ...  # return data
+    '''
     files = request.FILES.getlist("file", None)  # 接收前端传递过来的多个文件
     for file in files:
-        print(os.getcwd())
-        sql_path = f"{os.getcwd()}/backend/upload/{file.name}"
+        # print(os.getcwd())
+        sql_path = f"{os.getcwd()}/backend/certification_data/{hash}.{file.name.split('.')[1]}"
         with open(sql_path, 'wb') as f:
             for content in file.chunks():
                 # print(content)
                 f.write(content)
+        ''' TODO
+        对上传数据进行检查，符合规范保存
+        '''
+        try:
+            new_finished_data = models.AuthenticationData.objects.get(hash=hash)
+        except:
+            new_finished_data = models.AuthenticationData()
+        new_finished_data.hash = hash
+        new_finished_data.authentication_data_path = sql_path
+        new_finished_data.save()
 
     resp = {
         "code": 20000,
         "msg": 'success',
+    }
+    return JsonResponse(resp)
+
+
+@require_http_methods(["POST"])
+def judge_upload(request):
+    hash = request.get_full_path().split('%3D')[1]  # 从 POST url 中获取 hash 参数
+    print(hash)
+    files = request.FILES.getlist("file", None)  # 接收前端传递过来的多个文件
+    for file in files:
+        print(os.getcwd())
+        sql_path = f"{os.getcwd()}/backend/judge_data/{hash}.{file.name.split('.')[1]}"
+        with open(sql_path, 'wb') as f:
+            for content in file.chunks():
+                # print(content)
+                f.write(content)
+        ''' TODO
+            对上传数据进行检查，符合规范保存
+        '''
+        try:
+            new_judge_data = models.JudgeData.objects.get(hash=hash)
+        except:
+            new_judge_data = models.JudgeData()
+        new_judge_data.hash = hash
+        new_judge_data.judge_data_path = sql_path
+        new_judge_data.save()
+
+    resp = {
+        "code": 20000,
+        "msg": 'success',
+    }
+    return JsonResponse(resp)
+
+
+@require_http_methods(["POST"])
+def judge_apply(request):
+    body_json = request.body.decode()
+    body_dict = json.loads(body_json)
+    token = body_dict['token']
+    print(token)
+    hash = body_dict['hash']
+    try:
+        record = models.AuthenticationRecord.objects.get(hash=hash)
+    except:
+        return JsonResponse({
+            "code": 60204,
+            "message": "注册记录不存在"
+        })
+    print(record.watermark_type)
+    '''
+    进行裁决
+    '''
+    resp = {
+        "code": 20000,
+        "message": "success"
     }
     return JsonResponse(resp)

@@ -17,7 +17,9 @@ urlpatterns = [
     re_path('unfinished_detail/', views.unfinished_detail),
     re_path('finished_apply/', views.finished_apply),
     re_path('download_key/', views.download_key),
-    re_path('upload_test/', views.upload_test)
+    re_path('certification_upload/', views.certification_upload),
+    re_path('judge_upload/', views.judge_upload),
+    re_path('judge_apply/', views.judge_apply)
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
