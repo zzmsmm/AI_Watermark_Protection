@@ -120,10 +120,10 @@ export const asyncRoutes = [
     component: Layout,
     children: [
       {
-        path: 'apply',
+        path: 'apply/:hash/:type',
         name: 'Judge',
         component: () => import('@/views/judge/index'),
-        meta: { title: '裁决', icon: 'el-icon-s-check', roles: ['user'] }
+        meta: { title: '裁决申请', icon: 'el-icon-s-check', activeMenu: '/judge/apply/:hash/:type', roles: ['user'] }
       }
     ]
   },

@@ -1,8 +1,9 @@
 <template>
   <div class="app-container">
+    <div style="margin: 20px;"></div>
     <el-form ref="form" :model="form" :rules="formRules" label-width="80px">
-      <el-form-item label="模型名称" prop="model_name" placeholder="请输入模型名称">
-        <el-input v-model="form.model_name" autocomplete="off"></el-input>
+      <el-form-item label="模型名称" prop="model_name" style="width: 50%;">
+        <el-input v-model="form.model_name" autocomplete="off" placeholder="请输入模型名称"></el-input>
       </el-form-item>
       <el-form-item label="模型类型" prop="model_type">
         <el-select v-model="form.model_type" placeholder="请选择模型类型">

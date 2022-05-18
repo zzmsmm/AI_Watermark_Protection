@@ -32,10 +32,10 @@ export function unfinished_detail(hash) {
   })
 }
 
-export function finished_apply(data) {
+export function finished_apply(hash) {
   return request({
     url: 'http://127.0.0.1:8000/finished_apply/',
-    method: 'post',
-    data
+    method: 'get',
+    params: { hash }
   })
 }

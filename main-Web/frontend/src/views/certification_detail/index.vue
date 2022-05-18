@@ -31,7 +31,9 @@
             <svg-icon icon-class="introduction" style="margin-right: 10px;"/>算法介绍</h3>
           </el-divider>
           <div>
-            <p>{{detail}}</p>
+            <p style="font-size: 14px;color: #606266;"><svg-icon icon-class="tip" style="margin-right: 10px;"/>点击下方链接查看算法详情和使用说明</p>
+            <el-link :href="algorithm_detail" target="_blank">{{algorithm_detail}}</el-link>
+            <br /><br />
             <a v-bind:href="['http://127.0.0.1:8000/download_key/?hash=' + this.hash]">
               <el-button type="warning"
                          @click="setprocess(2)"
@@ -44,18 +46,23 @@
             <svg-icon icon-class="complete" style="margin-right: 10px;"/>材料提交</h3>
           </el-divider>
           <div>
-            <p>提交相关材料以完成注册...</p>
+            <p style="font-size: 14px;color: #606266;"><svg-icon icon-class="tip" style="margin-right: 10px;"/>
+            提交{{authentication_data_type}}以完成注册
+            </p>
             <el-upload
               class="upload-demo"
-              action="http://127.0.0.1:8000/upload_test/"
+              :action="['http://127.0.0.1:8000/certification_upload/hash=' + this.hash]"
               :on-change="handleChange"
               multiple
               :limit="1"
+              :on-remove="handleRemove"
               :on-exceed="handleExceed"
               :before-remove="beforeRemove"
               :file-list="fileList">
               <el-button size="small" type="primary" @click="setprocess(3)">点击上传</el-button>
+              <!--
               <div slot="tip" class="el-upload__tip">上传材料...</div>
+              -->
             </el-upload>
           </div>
           <el-button size="medium" type="success"
@@ -65,7 +72,7 @@
       <el-col :span="4" :offset="2">
         <el-steps :active="activestep" finish-status="success" direction="vertical" style="margin-top: 20px; margin-bottom: 20px; height: 420px;">
           <el-step title="算法推荐" icon="el-icon-edit"></el-step>
-          <el-step title="密钥下载" icon="el-icon-download"></el-step>
+          <el-step :title="download" icon="el-icon-download"></el-step>
           <el-step title="材料提交" icon="el-icon-upload"></el-step>
           <el-step title="注册完成" icon="el-icon-document-checked"></el-step>
         </el-steps>
@@ -76,7 +83,7 @@
 </template>
 
 <script>
-import { unfinished_detail } from '@/api/certification'
+import { unfinished_detail, finished_apply } from '@/api/certification'
 export default{
    data() {
      return {
@@ -84,8 +91,9 @@ export default{
        watermark_type: '',
        model_type: '',
        algorithm_name: '',
-       download: '下载密钥',
-       detail: '这里是算法详情介绍...',
+       download: '',
+       algorithm_detail: '',
+       authentication_data_type: '',
        fileList: [],
        activestep: 1,
      }
@@ -108,18 +116,41 @@ export default{
         this.watermark_type = data.watermark_type
         this.model_type = data.model_type
         this.algorithm_name = data.algorithm_name
+        this.algorithm_detail = data.algorithm_detail
+        this.authentication_data_type = data.authentication_data_type
+        this.download = data.key_generate == 'common' ? '下载密钥' : '下载数据'
       })
     },
     finished_apply() {
       console.log(this.fileList.length)
-      //this.$router.push({ path:'/home' })
-      this.activestep = 4
+      if(this.fileList.length > 0) {
+        finished_apply(this.hash).then(response => {
+          console.log(response)
+          if(response.message == 'success') {
+            this.activestep = 4
+            this.$message({
+              message: '模型注册成功！',
+            	type: 'success',
+            	showClose: true,
+            	duration: 2 * 1000
+            });
+            this.$router.push({ path:'/home' })
+          }
+        })
+      }
+      else {
+        this.$message.warning(`请先上传材料`);
+      }
     },
     handleChange(file, fileList) {
       this.fileList = fileList.slice(-3)
     },
     handleExceed(files, fileList) {
       this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+      this.fileList = fileList.slice(-3)
     },
     beforeRemove(file, fileList) {
       return this.$confirm(`确定移除 ${ file.name }？`);

@@ -40,14 +40,12 @@
       <div class="user-skills user-bio-section">
         <div class="user-bio-section-header"><svg-icon icon-class="process" /><span>进度</span></div>
         <div class="user-bio-section-body">
-          <div class="progress-item">
-            <span>认证1</span>
-            <el-progress :percentage="70" />
-          </div>
-          <div class="progress-item">
-            <span>认证2</span>
-            <el-progress :percentage="100" status="success" />
-          </div>
+          <el-badge :value="unfinished_num" :max="10" class="item" type="error">
+            <el-button size="small" @click="toUnfinished">待完成记录</el-button>
+          </el-badge>
+          <el-badge :value="certification_num" :max="10" class="item" type="primary">
+            <el-button size="small" @click="toCertification">注册记录</el-button>
+          </el-badge>
         </div>
       </div>
     </div>
@@ -57,6 +55,7 @@
 <script>
 import PanThumb from '@/components/PanThumb'
 import {changeAvatar} from '@/api/user.js'
+import {unfinished_list, certification_list} from '@/api/certification'
 export default {
   components: { PanThumb },
   props: {
@@ -73,10 +72,41 @@ export default {
   },
   data() {
     return {
-      imageUrl: ''
+      imageUrl: '',
+      unfinished_num: 5,
+      certification_num: 4
     }
   },
+  created(){
+    this.getNum()
+  },
   methods: {
+    getNum() {
+      certification_list(this.$store.getters.token).then(response => {
+        console.log(response)
+        const { data } = response
+        var count = 0
+        for(var i in data){
+          count ++
+        }
+        this.certification_num = count
+      })
+      unfinished_list(this.$store.getters.token).then(response => {
+        console.log(response)
+        const { data } = response
+        var count = 0
+        for(var i in data){
+          count ++
+        }
+        this.unfinished_num = count
+      })
+    },
+    toUnfinished() {
+      this.$router.push({ path:'/certification/list/' })
+    },
+    toCertification() {
+       this.$router.go(0) 
+    },
     handleAvatarSuccess(res, file) {
             // this.imageUrl = URL.createObjectURL(file.raw);
             // console.log(file)
@@ -200,5 +230,9 @@ export default {
     width: 10px;
     height: 10px;
     display: block;
+  }
+  .item {
+    margin-top: 10px;
+    margin-right: 25px;
   }
 </style>

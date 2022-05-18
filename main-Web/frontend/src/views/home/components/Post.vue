@@ -1,17 +1,21 @@
 <template>
   <div class="post">
     <div class="user-block">
-      <img class="img-circle" :src="avatar+avatarPrefix">
+      <el-tooltip content="点击前往裁决" placement="top">
+        <a href="javascript:;" @click="tojudge()">
+          <img class="img-circle" :src="avatar+avatarPrefix">
+        </a>
+      </el-tooltip>
       <span class="typename text-muted">{{model_type}} 模型 - {{watermark_type}}</span>
       <span class="description">Hash: {{hash}}</span>
     </div>
     <p>水印算法：{{algorithm_name}}</p>
-    <p>算法详情：{{algorithm_detail}}</p>
+    <el-link :href="algorithm_detail" target="_blank">算法详情：{{algorithm_detail}}</el-link>
     <ul class="list-inline">
       <li>
         <span class="link-black text-sm">
           <svg-icon icon-class="time" />
-          Time: {{time}}
+          Time: {{timestamp}}
         </span>
       </li>
     </ul>
@@ -25,7 +29,7 @@ export default {
   name: 'Post',
   props: {
     hash: '',
-    time: '',
+    timestamp: '',
     model_type: '',
     watermark_type: '',
     algorithm_name: '',
@@ -42,6 +46,11 @@ export default {
       'name',
     ])
   },
+  methods: {
+    tojudge() {
+      this.$router.push({ path:'/judge/apply/'+ this.hash + '/' + this.watermark_type})
+    }
+  }
 }
 </script>
 

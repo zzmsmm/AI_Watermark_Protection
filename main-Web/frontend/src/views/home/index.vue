@@ -8,14 +8,14 @@
         </el-col>
 
         <el-col :span="17" :xs="24">
-          <el-card style="height: 480px;">
+          <el-card>
             <el-tabs v-model="activeTab" :stretch=true>
               <el-tab-pane name="activity">
-                <span slot="label" class="fontClass">认证记录</span>
+                <span slot="label" class="fontClass">注册记录</span>
                 <activity />
               </el-tab-pane>
               <el-tab-pane name="timeline">
-                <span slot="label" class="fontClass">时间轴</span>
+                <span slot="label" class="fontClass">裁决记录</span>
                 <timeline />
               </el-tab-pane>
             </el-tabs>
