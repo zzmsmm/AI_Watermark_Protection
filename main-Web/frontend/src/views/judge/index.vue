@@ -32,7 +32,10 @@
         <el-input v-model="form.api" placeholder="请输入可疑 API" style="width: 50%;"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="success" @click="judge_apply" style="margin-left: 10%; width: 20%;">提交裁决</el-button>
+        <el-button :loading="loading" type="success" @click="judge_apply"
+        style="margin-left: 10%; width: 20%;">
+          提交裁决
+        </el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -58,6 +61,7 @@ export default {
     }
     return {
       type: 0,
+      loading: false,
       form:{
         token:this.$store.getters.token,
         hash: '',
@@ -84,6 +88,7 @@ export default {
     judge_apply(){
       this.$refs.form.validate(valid => {
         if(valid){
+          this.loading = true
           judge_apply(this.form).then(response => {
             console.log(response.message)
             if(response.message == 'success') {
@@ -92,9 +97,12 @@ export default {
               	type: 'success',
               	showClose: true,
               	duration: 2 * 1000
-              });
+              })
+              this.loading = false
             }
-          })
+          }).catch(() => {
+              this.loading = false
+            })
         }else{
           return false
         }

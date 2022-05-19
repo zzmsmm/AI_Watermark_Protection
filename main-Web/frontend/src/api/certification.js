@@ -39,3 +39,11 @@ export function finished_apply(hash) {
     params: { hash }
   })
 }
+
+export function certification_upload(data) {
+  return request({
+    url: 'http://127.0.0.1:8000/certification_upload/',
+    method: 'post',
+    data
+  })
+}

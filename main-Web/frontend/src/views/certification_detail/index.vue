@@ -51,19 +51,20 @@
             </p>
             <el-upload
               class="upload-demo"
-              :action="['http://127.0.0.1:8000/certification_upload/hash=' + this.hash]"
+              action="#"
               :on-change="handleChange"
               multiple
               :limit="1"
+              :before-upload="beforeUpload"
               :on-remove="handleRemove"
               :on-exceed="handleExceed"
-              :before-remove="beforeRemove"
               :file-list="fileList">
-              <el-button size="small" type="primary" @click="setprocess(3)">点击上传</el-button>
-              <!--
-              <div slot="tip" class="el-upload__tip">上传材料...</div>
-              -->
+              <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
+            <p v-if="activestep == 3"  style="font-size: 14px;color: #606266;">
+              <svg-icon icon-class="zip" style="margin-right: 10px;"/>
+              {{file}}
+            </p>
           </div>
           <el-button size="medium" type="success"
           style="width:30%; margin-left:40%;"
@@ -83,7 +84,7 @@
 </template>
 
 <script>
-import { unfinished_detail, finished_apply } from '@/api/certification'
+import { unfinished_detail, finished_apply, certification_upload } from '@/api/certification'
 export default{
    data() {
      return {
@@ -94,7 +95,7 @@ export default{
        download: '',
        algorithm_detail: '',
        authentication_data_type: '',
-       fileList: [],
+       file: '',
        activestep: 1,
      }
    },
@@ -122,8 +123,7 @@ export default{
       })
     },
     finished_apply() {
-      console.log(this.fileList.length)
-      if(this.fileList.length > 0) {
+      if(this.activestep >= 3) {
         finished_apply(this.hash).then(response => {
           console.log(response)
           if(response.message == 'success') {
@@ -142,6 +142,29 @@ export default{
         this.$message.warning(`请先上传材料`);
       }
     },
+    beforeUpload(file){
+      var fd = new FormData();
+      fd.append('file', file);
+      fd.append('hash', this.hash);
+      certification_upload(fd).then(response => {
+        console.log("success")
+        if(response.message == 'success') {
+          this.activestep = 3
+          console.log(file.name)
+          this.file = file.name
+          this.$message({
+            message: '文件上传成功',
+          	type: 'success',
+          	showClose: true,
+          	duration: 2 * 1000
+          })
+        }
+      }).catch(() => {
+              console.log("error")
+              this.activestep = 2
+            })
+       return false  //屏蔽了action的默认上传
+    },
     handleChange(file, fileList) {
       this.fileList = fileList.slice(-3)
     },
@@ -149,11 +172,8 @@ export default{
       this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
     },
     handleRemove(file, fileList) {
-      console.log(file, fileList);
+      //console.log(file, fileList);
       this.fileList = fileList.slice(-3)
-    },
-    beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${ file.name }？`);
     }
   }
 }
