@@ -10,8 +10,14 @@ import random
 import time
 from . import models
 
+import zipfile
 
-# from . import forms
+# backdoor need
+from urllib import response
+import requests
+import os
+from PIL import Image
+
 
 # Create your views here.
 @require_http_methods(["POST"])
@@ -247,19 +253,24 @@ def unfinished_detail(request):
     }
     return JsonResponse(resp)
 
+
+def un_zip(file_name, hash):
+    zip_file = zipfile.ZipFile(file_name)
     '''
-    file = request.FILES.get('detail_file')
-    hash = request.POST.get('hash')
-    sql_path = f"{os.getcwd()}/detail/{hash}"
-    with open(sql_path, 'wb') as f:
-        for content in file.chunks():
-            f.write(content)
-    resp = {
-        "code": 20000,
-        "message": 'success',
-    }
-    return JsonResponse(resp)
+    if os.path.isdir(file_name.split('.')[0]):
+        pass
+    else:
+        os.mkdir(file_name.split('.')[0])
     '''
+    for names in zip_file.namelist():
+        if hash != names.split('/')[0]:
+            zip_file.close()
+            os.remove(file_name)
+            return False
+        zip_file.extract(names, f"{os.getcwd()}/backend/certification_data")
+    zip_file.close()
+    os.remove(file_name)
+    return True
 
 
 @require_http_methods(["GET"])
@@ -315,40 +326,47 @@ def finished_apply(request):
 
 @require_http_methods(["POST"])
 def certification_upload(request):
-    hash = request.get_full_path().split('%3D')[1]  # 从 POST url 中获取 hash 参数
+    # hash = request.get_full_path().split('%3D')[1]  # 从 POST url 中获取 hash 参数
+    hash = request.POST.get('hash')
     record = models.RequestInfo.objects.get(hash=hash)
     algorithm = models.RecommendAlgorithm.objects.filter(watermark_type=record.watermark_type,
                                                          model_type=record.model_type)
     algorithm = models.WaterMarkAlgorithm.objects.get(algorithm_name=algorithm[0].algorithm_name)
     print(algorithm.authentication_data_type)
-    ''' TODO
-    if algorithm.authentication_data_type == '后门数据':
-        ...  # return key
-    else:
-        ...  # return data
-    '''
+
     files = request.FILES.getlist("file", None)  # 接收前端传递过来的多个文件
     for file in files:
-        # print(os.getcwd())
         sql_path = f"{os.getcwd()}/backend/certification_data/{hash}.{file.name.split('.')[1]}"
         with open(sql_path, 'wb') as f:
             for content in file.chunks():
-                # print(content)
                 f.write(content)
         ''' TODO
         对上传数据进行检查，符合规范保存
         '''
+        if file.name.split('.')[1] == 'zip':
+            print("unzip")
+            if not un_zip(sql_path, hash):
+                return JsonResponse({
+                    "code": 60204,
+                    "message": "数据文件命名不规范"
+                })
+        else:
+            os.remove(sql_path)
+            return JsonResponse({
+                "code": 60204,
+                "message": "压缩文件只接受zip格式"
+            })
         try:
             new_finished_data = models.AuthenticationData.objects.get(hash=hash)
         except:
             new_finished_data = models.AuthenticationData()
         new_finished_data.hash = hash
-        new_finished_data.authentication_data_path = sql_path
+        new_finished_data.authentication_data_path = sql_path.split('.')[0]  # 保存文件目录
         new_finished_data.save()
 
     resp = {
         "code": 20000,
-        "msg": 'success',
+        "message": 'success',
     }
     return JsonResponse(resp)
 
@@ -388,7 +406,8 @@ def judge_apply(request):
     body_json = request.body.decode()
     body_dict = json.loads(body_json)
     token = body_dict['token']
-    print(token)
+    user = models.User.objects.get(token=token)
+    # print(token)
     hash = body_dict['hash']
     try:
         record = models.AuthenticationRecord.objects.get(hash=hash)
@@ -397,10 +416,33 @@ def judge_apply(request):
             "code": 60204,
             "message": "注册记录不存在"
         })
-    print(record.watermark_type)
-    '''
-    进行裁决
-    '''
+    if user.user_name != record.user_name:
+        return JsonResponse({
+            "code": 60204,
+            "message": "您无权对该注册记录进行操作"
+        })
+
+    if record.watermark_type == '黑盒':
+        url = body_dict['api']
+        # url = "http://127.0.0.1:8001/upload/"
+        data = models.AuthenticationData.objects.get(hash=hash)
+        path1 = data.authentication_data_path
+        lis = os.listdir(path1)
+        try:
+            for i in range(len(lis)):
+                tar_file = {'file': (open(os.path.join(path1, lis[i]), 'rb'))}
+                response = requests.post(url=url, files=tar_file)
+                data = response.json()
+                print(data['number'])
+                # print(data)
+        except:
+            return JsonResponse({
+                "code": 60204,
+                "message": "API Not Found"
+            })
+    else:
+        pass
+
     resp = {
         "code": 20000,
         "message": "success"
