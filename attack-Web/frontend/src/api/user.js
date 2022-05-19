@@ -4,7 +4,7 @@ import request from '@/utils/request'
 export function login(data) {
   return request({
     //url: '/vue-admin-template/user/login',
-    url: 'http://127.0.0.1:8000/login/',
+    url: 'http://127.0.0.1:8001/login/',
     method: 'post',
     data
   })
@@ -13,7 +13,7 @@ export function login(data) {
 //登出
 export function logout() {
   return request({
-    url: 'http://127.0.0.1:8000/logout/',
+    url: 'http://127.0.0.1:8001/logout/',
     method: 'post'
   })
 }
@@ -21,7 +21,7 @@ export function logout() {
 
 export function Download() {
   return request({
-    url: 'http://127.0.0.1:8000/download/',
+    url: 'http://127.0.0.1:8001/download/',
     method: 'get',
     params:{}
   })
@@ -29,7 +29,7 @@ export function Download() {
 
 export function permission() {
 	return request({
-		url: 'http://127.0.0.1:8000/permission/',
+		url: 'http://127.0.0.1:8001/permission/',
 		method: 'get',
 		params:{}
 	})
@@ -37,7 +37,7 @@ export function permission() {
 
 export function upload(data) {
 	return request({
-		url: 'http://127.0.0.1:8000/upload/',
+		url: 'http://127.0.0.1:8001/upload/',
 		method: 'post',
 		data
 	})
@@ -45,7 +45,7 @@ export function upload(data) {
 
 export function getinfo() {
 	return request({
-		url: 'http://127.0.0.1:8000/getinfo/',
+		url: 'http://127.0.0.1:8001/getinfo/',
 		method: 'get',
 		params:{}
 	})

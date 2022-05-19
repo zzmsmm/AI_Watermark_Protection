@@ -17,7 +17,7 @@ export const constantRoutes = [{
 		component: () => import('@/views/404'),
 		hidden: true
 	},
-	
+
 	{
 		path: '/',
 		component: Layout,
@@ -44,9 +44,10 @@ export const constantRoutes = [{
 				title: '证明平台',
 				icon: 'form'
 			}
-		}]
+		}],
+    hidden: true
 	},
-	
+
 	{
 		path: '/verify',
 		component: Layout,
@@ -55,12 +56,12 @@ export const constantRoutes = [{
 			name: 'Verify',
 			component: () => import('@/views/verify/index'),
 			meta: {
-				title: '识别平台',
+				title: '数字识别平台',
 				icon: 'search'
 			}
 		}]
 	},
-	
+
 	{
 		path: '*',
 		redirect: '/404',

@@ -36,6 +36,7 @@ import { mapGetters } from 'vuex'
 import{permission} from "@/api/user.js"
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import { logout } from '@/api/user.js'
 
 export default {
 	data(){
@@ -71,7 +72,9 @@ export default {
       this.$store.dispatch('app/toggleSideBar')
     },
     async logout() {
-      await this.$store.dispatch('user/logout')
+      logout().then(response => {
+      })
+      //await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     }
   }

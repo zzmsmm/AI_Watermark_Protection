@@ -115,7 +115,7 @@ def Download1(request):
 
 @require_http_methods(["POST"])
 def Upload(request):
-    files = request.FILES.getlist("file",None) # 接收前端传递过来的多个文件
+    files = request.FILES.getlist("file", None) # 接收前端传递过来的多个文件
     for file in files:
         print(os.getcwd())
         sql_path = f"{os.getcwd()}/mnist_test/upload/{file.name}"

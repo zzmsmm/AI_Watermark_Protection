@@ -21,7 +21,7 @@ router.beforeEach(async(to, from, next) => {
   // determine whether the user has logged in
   const hasToken = getToken()
 
-  if (hasToken) {
+  if (false) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
       next({ path: '/' })
@@ -31,7 +31,7 @@ router.beforeEach(async(to, from, next) => {
       const hasGetUserInfo = store.getters.name
       if (hasGetUserInfo) {
         next()
-      } 
+      }
 	  //*/
 	  /*
 	  const hasRoles = store.getters.roles && store.getters.roles.length > 0
@@ -51,9 +51,9 @@ router.beforeEach(async(to, from, next) => {
 		  const { roles } = await store.dispatch('user/getInfo')
 		  //根据roles动态生成路由表
 		  const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
-		  
+
 		  router.addRoutes(accessRoutes)
-		  
+
 		  next({ ...to, replace: true })
 		  */
         } catch (error) {
