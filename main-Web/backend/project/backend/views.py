@@ -1,22 +1,49 @@
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
 from django.shortcuts import HttpResponse
-from django.shortcuts import render
-from django.shortcuts import redirect
-import os
 import json
 import hashlib
-import random
-import time
 from . import models
 
-import zipfile
-
 # backdoor need
-from urllib import response
 import requests
-import os
 from PIL import Image
+
+# whitebox need
+import torch
+import qrcode
+from torch.utils.data import Dataset
+import torch.utils.data as Data
+import torchvision
+import random
+import numpy as np
+import zipfile
+import os
+import shutil
+
+
+class QRDataset(Dataset):
+    def __init__(self, txt_path, sql_path, transform=None, target_transform=None):
+        fh = open(txt_path, 'r')
+        imgs = []
+        for line in fh:
+            line.rstrip()
+            words= line.split()
+            # imgs.append((sql_path + '/qrdataset/' + words[0], int(words[1])))
+            imgs.append((sql_path + '/qrdataset/' + words[0].split('/')[2], int(words[1])))
+        self.imgs = imgs
+        self.transform = transform
+        self.target_transform = target_transform
+
+    def __getitem__(self, index):
+        fn, label = self.imgs[index]
+        img = Image.open(fn).convert('RGB')
+        if self.transform is not None:
+            img = self.transform(img)
+        return img, label
+
+    def __len__(self):
+        return len(self.imgs)
 
 
 # Create your views here.
@@ -254,51 +281,104 @@ def unfinished_detail(request):
     return JsonResponse(resp)
 
 
-def un_zip(file_name, hash):
+def un_zip(file_name, hash, situation):
     zip_file = zipfile.ZipFile(file_name)
-    '''
-    if os.path.isdir(file_name.split('.')[0]):
-        pass
-    else:
-        os.mkdir(file_name.split('.')[0])
-    '''
     for names in zip_file.namelist():
         if hash != names.split('/')[0]:
             zip_file.close()
             os.remove(file_name)
             return False
-        zip_file.extract(names, f"{os.getcwd()}/backend/certification_data")
+        if situation == 0:
+            zip_file.extract(names, f"{os.getcwd()}/backend/certification_data")
+        else:
+            zip_file.extract(names, f"{os.getcwd()}/backend/judge_data")
     zip_file.close()
     os.remove(file_name)
     return True
 
 
+def gen_qr(n, content, sql_path):
+    if os.path.isdir(f"{sql_path}/qrdataset/"):
+        pass
+    else:
+        os.mkdir(f"{sql_path}/qrdataset/")
+    prefix = f"{sql_path}/qrdataset/"
+    for i in range(n):
+        qr = qrcode.QRCode(
+            version=4,
+            error_correction=qrcode.constants.ERROR_CORRECT_Q,
+            box_size=3.5,
+            border=0,
+        )
+        qr.add_data(content[i])
+        img = qr.make_image()
+        filename = prefix + str(i) + ".png"
+        img.save(filename)
+
+
+def gen_seed(value):
+    int_value = int(("0x"+value), 16)
+    return int_value % 2**32
+
+
 @require_http_methods(["GET"])
 def download_key(request):
-    # print((request.GET.get("hash")))
     hash = request.GET.get("hash")
     record = models.RequestInfo.objects.get(hash=hash)
     algorithm = models.RecommendAlgorithm.objects.filter(watermark_type=record.watermark_type,
                                                          model_type=record.model_type)
     algorithm = models.WaterMarkAlgorithm.objects.get(algorithm_name=algorithm[0].algorithm_name)
     print(algorithm.key_generate)
-    ''' TODO
+
     if algorithm.key_generate == 'common':
-        ...  # return key
-    else:
-        ...  # return data
-    '''
-    key = record.key
-    # print(key)
-    key_path = f"{os.getcwd()}/backend/key/key.txt"
-    with open(key_path, 'w') as f:
+        key = record.key
+        key_path = f"{os.getcwd()}/backend/key/key.txt"
+        with open(key_path, 'w') as f:
             f.write(key)
-    file = open('backend\key\key.txt', 'rb')  # 文件名必须为英文，中文暂时无法正确解码
-    response = HttpResponse(file)
-    response['Content-Type'] = 'application/octet-stream'  # 设置头信息，告诉浏览器这是个文件
-    response['Content-Disposition'] = 'attachment;filename="{0}"'.format(hash + '.key')
-    file.close()
-    return response
+        file = open('backend\key\key.txt', 'rb')  # 文件名必须为英文，中文暂时无法正确解码
+        response = HttpResponse(file)
+        response['Content-Type'] = 'application/octet-stream'  # 设置头信息，告诉浏览器这是个文件
+        response['Content-Disposition'] = 'attachment;filename="{0}"'.format(hash + '.key')
+        file.close()
+        return response
+    else:
+        sql_path = f"{os.getcwd()}/backend/certification_data/{hash}"
+        if os.path.isdir(sql_path):
+            pass
+        else:
+            os.mkdir(sql_path)
+
+        serial = record.key
+        num = 10
+        content = []
+        for i in range(100):
+            content.append(serial+'-'+('%04d' % i))
+        gen_qr(num, content, sql_path)
+
+        arr_1 = np.array(range(0, num, 1))
+        np.random.seed(gen_seed(serial))
+        np.random.shuffle(arr_1)
+        arr_2 = [0] * int(num / 2) + [1] * int(num / 2)
+        np.random.shuffle(arr_2)
+        f = open(f"{sql_path}/index.txt", 'w')
+        for i in range(0, num):
+            f.write('./qrdataset/' + str(arr_1[i]) + '.png ' + str(arr_2[i]) + '\n')
+        f.close()
+
+        filenames = os.listdir(f"{sql_path}/qrdataset/")
+        with zipfile.ZipFile('qrdataset.zip', "w", zipfile.ZIP_DEFLATED) as zf:
+            zf.write(f"{sql_path}/index.txt", "index.txt")
+            for item in filenames:
+                zf.write(f"{sql_path}/qrdataset/" + item, "qrdataset/" + item)
+
+        file = open('qrdataset.zip', 'rb')  # 文件名必须为英文，中文暂时无法正确解码
+        response = HttpResponse(file)
+        response['Content-Type'] = 'application/octet-stream'  # 设置头信息，告诉浏览器这是个文件
+        response['Content-Disposition'] = 'attachment;filename="{0}"'.format(hash + '.zip')
+        file.close()
+
+        os.remove('qrdataset.zip')
+        return response
 
 
 # 这个地方其实应该就是把RequestInfo里的数据转到AuthenticationData和AuthenticationRecord里
@@ -340,12 +420,10 @@ def certification_upload(request):
         with open(sql_path, 'wb') as f:
             for content in file.chunks():
                 f.write(content)
-        ''' TODO
-        对上传数据进行检查，符合规范保存
-        '''
+
         if file.name.split('.')[1] == 'zip':
             print("unzip")
-            if not un_zip(sql_path, hash):
+            if not un_zip(sql_path, hash, 0):
                 return JsonResponse({
                     "code": 60204,
                     "message": "数据文件命名不规范"
@@ -356,13 +434,18 @@ def certification_upload(request):
                 "code": 60204,
                 "message": "压缩文件只接受zip格式"
             })
-        try:
-            new_finished_data = models.AuthenticationData.objects.get(hash=hash)
-        except:
-            new_finished_data = models.AuthenticationData()
-        new_finished_data.hash = hash
-        new_finished_data.authentication_data_path = sql_path.split('.')[0]  # 保存文件目录
-        new_finished_data.save()
+
+        '''
+        check data
+        '''
+
+    try:
+        new_finished_data = models.AuthenticationData.objects.get(hash=hash)
+    except:
+        new_finished_data = models.AuthenticationData()
+    new_finished_data.hash = hash
+    new_finished_data.authentication_data_path = sql_path.split('.')[0]
+    new_finished_data.save()
 
     resp = {
         "code": 20000,
@@ -373,30 +456,69 @@ def certification_upload(request):
 
 @require_http_methods(["POST"])
 def judge_upload(request):
-    hash = request.get_full_path().split('%3D')[1]  # 从 POST url 中获取 hash 参数
+    hash = request.POST.get('hash')
     print(hash)
+    try:
+        record = models.AuthenticationRecord.objects.get(hash=hash)
+    except:
+        return JsonResponse({
+            "code": 60204,
+            "message": "注册记录不存在"
+        })
+    algorithm = models.RecommendAlgorithm.objects.filter(watermark_type=record.watermark_type,
+                                                         model_type=record.model_type)
+    algorithm = models.WaterMarkAlgorithm.objects.get(algorithm_name=algorithm[0].algorithm_name)
+    print(algorithm.verify_data_type)
+
+    if algorithm.verify_data_type == 'API':
+        return JsonResponse({
+            "code": 60204,
+            "message": "该注册记录应提交 API"
+        })
+
     files = request.FILES.getlist("file", None)  # 接收前端传递过来的多个文件
     for file in files:
-        print(os.getcwd())
         sql_path = f"{os.getcwd()}/backend/judge_data/{hash}.{file.name.split('.')[1]}"
         with open(sql_path, 'wb') as f:
             for content in file.chunks():
-                # print(content)
                 f.write(content)
-        ''' TODO
-            对上传数据进行检查，符合规范保存
+
+        if file.name.split('.')[1] == 'zip':
+            print("unzip")
+            if not un_zip(sql_path, hash, 1):
+                return JsonResponse({
+                    "code": 60204,
+                    "message": "数据文件命名不规范"
+                })
+        else:
+            os.remove(sql_path)
+            return JsonResponse({
+                "code": 60204,
+                "message": "压缩文件只接受zip格式"
+            })
+
         '''
-        try:
-            new_judge_data = models.JudgeData.objects.get(hash=hash)
-        except:
-            new_judge_data = models.JudgeData()
-        new_judge_data.hash = hash
-        new_judge_data.judge_data_path = sql_path
-        new_judge_data.save()
+        check data
+        '''
+
+    sql_path = f"{os.getcwd()}/backend/certification_data/{hash}"
+    judge_path = f"{os.getcwd()}/backend/judge_data/{hash}"
+    if os.path.isfile(f"{sql_path}/WhiteBoxVerify.py"):
+        shutil.copy(f"{sql_path}/WhiteBoxVerify.py", f"{os.getcwd()}/backend/WhiteBoxVerify_curr.py")
+    if os.path.isfile(f"{judge_path}/WhiteBoxExtract.py"):
+        shutil.copy(f"{judge_path}/WhiteBoxExtract.py", f"{os.getcwd()}/backend/WhiteBoxExtract_curr.py")
+
+    try:
+        new_judge_data = models.JudgeData.objects.get(hash=hash)
+    except:
+        new_judge_data = models.JudgeData()
+    new_judge_data.hash = hash
+    new_judge_data.judge_data_path = judge_path
+    new_judge_data.save()
 
     resp = {
         "code": 20000,
-        "msg": 'success',
+        "message": 'success',
     }
     return JsonResponse(resp)
 
@@ -407,7 +529,6 @@ def judge_apply(request):
     body_dict = json.loads(body_json)
     token = body_dict['token']
     user = models.User.objects.get(token=token)
-    # print(token)
     hash = body_dict['hash']
     try:
         record = models.AuthenticationRecord.objects.get(hash=hash)
@@ -434,17 +555,98 @@ def judge_apply(request):
                 response = requests.post(url=url, files=tar_file)
                 data = response.json()
                 print(data['number'])
-                # print(data)
+                result = 'success'
         except:
             return JsonResponse({
                 "code": 60204,
                 "message": "API Not Found"
             })
     else:
+        sql_path = f"{os.getcwd()}/backend/certification_data/{hash}"
+        judge_path = f"{os.getcwd()}/backend/judge_data/{hash}"
+
+        qr_host = QRDataset(f"{sql_path}/index.txt", sql_path, torchvision.transforms.ToTensor())
+        qr_host_loader = Data.DataLoader(
+            dataset=qr_host,
+            batch_size=16,
+            shuffle=True
+        )
+        device = torch.device('cuda:2' if torch.cuda.is_available() else 'cpu')
+
+        model3 = torch.load(f'{judge_path}/model/ResNet_extract.pkl').to(device)
+        model4 = torch.load(f'{sql_path}/model/ResNet_verify.pkl').to(device)
+
+        error_count = 0
+        n = 0
+        for step, (b_x, b_y) in enumerate(qr_host_loader):
+            n += len(b_y)
+            b_x = b_x.to(device)
+            b_y = b_y.to(device)
+            ans = model4(model3(b_x).to(device))
+            for i in range(len(b_y)):
+                if torch.argmax(ans[i]) != b_y[i]:
+                    error_count = error_count + 1
+        print(n)
+        print(error_count / n * 100.0)
+        result = 'success'
+
+        with open(f"{os.getcwd()}/backend/WhiteBoxVerify_curr.py", 'w') as f:
+            f.write("# initial WhiteBoxVerify")
+        with open(f"{os.getcwd()}/backend/WhiteBoxExtract_curr.py", 'w') as f:
+            f.write("# initial WhiteBoxExtract")
+
+    judge_record = models.JudgeRecord()
+    judge_record.hash = generate_key()
+    judge_record.user_name = record.user_name
+    judge_record.authentication_hash = hash
+    if record.watermark_type == '黑盒':
+        judge_record.judge_info = body_dict['api']
+    else:
+        # judge_data = models.JudgeData.objects.get(hash=hash)
+        judge_record.judge_info = f"./backend/judge_data/{hash}"
         pass
+    judge_record.judge_result = result
+    judge_record.save()
+    print(judge_record.timestamp)
 
     resp = {
         "code": 20000,
         "message": "success"
+    }
+    return JsonResponse(resp)
+
+
+@require_http_methods(["GET"])
+def judge_list(request):
+    token = request.GET.get('token')
+    # 先通过token获取用户名
+    try:
+        user = models.User.objects.get(token=token)
+    except models.User.DoesNotExist:
+        return JsonResponse({
+            "code": 60204,
+            "message": "User Not Found"
+        })
+    # 再通过用户名获取记录
+    try:
+        data = models.JudgeRecord.objects.filter(user_name=user.user_name)
+    except models.JudgeRecord.DoesNotExist:
+        return JsonResponse({
+            "code": 60204,
+            "message": "Record Not Found"
+        })
+    data = list(data.values())
+    # print(data)
+    for row in data:
+        record = models.AuthenticationRecord.objects.get(hash=row['authentication_hash'])
+        row['model_type'] = record.model_type
+        row['watermark_type'] = record.watermark_type
+        algorithm = models.RecommendAlgorithm.objects.filter(watermark_type=record.watermark_type,
+                                                             model_type=record.model_type)
+        algorithm = models.WaterMarkAlgorithm.objects.get(algorithm_name=algorithm[0].algorithm_name)
+        row['algorithm_name'] = algorithm.algorithm_name
+    resp = {
+        "code": 20000,
+        "data": data
     }
     return JsonResponse(resp)

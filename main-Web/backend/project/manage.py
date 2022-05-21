@@ -3,6 +3,11 @@
 import os
 import sys
 
+import torch
+sys.path.append('./backend')
+from WhiteBoxExtract_curr import *
+from WhiteBoxVerify_curr import *
+
 
 def main():
     """Run administrative tasks."""

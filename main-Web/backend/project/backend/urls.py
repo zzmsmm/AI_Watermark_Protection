@@ -2,7 +2,6 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import re_path
 from django.views.generic import TemplateView
-
 from . import views
 
 urlpatterns = [
@@ -19,7 +18,8 @@ urlpatterns = [
     re_path('download_key/', views.download_key),
     re_path('certification_upload/', views.certification_upload),
     re_path('judge_upload/', views.judge_upload),
-    re_path('judge_apply/', views.judge_apply)
+    re_path('judge_apply/', views.judge_apply),
+    re_path('judge_list/', views.judge_list)
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

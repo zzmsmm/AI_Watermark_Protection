@@ -75,6 +75,26 @@ class AuthenticationRecord(models.Model):
         return getattr(self, item)
 
 
+# 裁决记录表
+class JudgeRecord(models.Model):
+    user_name = models.CharField(max_length=128)
+    hash = models.CharField(max_length=128, unique=True)
+    timestamp = models.DateTimeField(auto_now_add=True, null=True)
+    authentication_hash = models.CharField(max_length=128, null=True)
+    judge_info = models.CharField(max_length=128, null=True)
+    judge_result = models.CharField(max_length=128, null=True)
+
+    def __str__(self) -> str:
+        return self.hash
+
+    def keys(self):
+        return ('user_name', 'hash', 'timestamp', 'authentication_hash',
+                'judge_info', 'judge_result')
+
+    def __getitem__(self, item):
+        return getattr(self, item)
+
+
 # 待完成认证请求信息表
 class RequestInfo(models.Model):
     user_name = models.CharField(max_length=128)
