@@ -51,7 +51,7 @@ class Extract(torch.nn.Module):
         # self.avg_pool = torch.nn.AdaptiveAvgPool2d((1, 1))
         # self.fc = torch.nn.Linear(128,2)
         self.v_input = []
-        self.n_input = 1*16*28*28 + 1*32*14*14 + 1*64*7*7 + 1*128*4*4
+        self.n_input = 298448
         
     def _make_layers(self, block, out_channels, blocks, stride=1):
         downsample = None
