@@ -134,7 +134,7 @@ export default{
             	showClose: true,
             	duration: 2 * 1000
             });
-            this.$router.push({ path:'/home' })
+            this.$router.push({ path:'/home/activity' })
           }
         })
       }

@@ -9,8 +9,8 @@
       <span class="typename text-muted">{{model_type}} 模型 - {{watermark_type}}</span>
       <span class="description">Hash: {{hash}}</span>
     </div>
-    <p>水印算法：{{algorithm_name}}</p>
-    <el-link :href="algorithm_detail" target="_blank">算法详情：{{algorithm_detail}}</el-link>
+    <p><b>水印算法：</b>{{algorithm_name}}</p>
+    <el-link :href="algorithm_detail" target="_blank"><b>算法详情：</b>{{algorithm_detail}}</el-link>
     <ul class="list-inline">
       <li>
         <span class="link-black text-sm">

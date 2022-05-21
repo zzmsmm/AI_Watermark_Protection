@@ -54,6 +54,7 @@ export default {
   },
   methods: {
     getUser() {
+      this.activeTab = this.$route.params.list != ':list' ? this.$route.params.list : 'activity'
       this.user = {
         name: this.name,
         email: this.email,

@@ -11,22 +11,26 @@
           <el-radio-button label=1 value=1>白盒</el-radio-button>
         </el-radio-group>
       </el-form-item>
-      <el-form-item v-show="type==1" label="模型文件" prop='fileList'>
+      <el-form-item v-show="type==1" label="模型文件" prop='file'>
         <div style="font-size: 14px;color: #606266;"><svg-icon icon-class="tip" style="margin-right: 10px;"/>
         上传可疑模型的参数，具体规范可参考算法指导</div>
         <el-upload
           class="upload-demo"
-          :action="['http://127.0.0.1:8000/judge_upload/hash=' + this.form.hash]"
+          action="#"
           :on-change="handleChange"
           multiple
           :limit="1"
+          :before-upload="beforeUpload"
           :on-remove="handleRemove"
           :on-exceed="handleExceed"
-          :before-remove="beforeRemove"
           :file-list="form.fileList"
           style="width: 50%;">
           <el-button size="small" type="primary">点击上传</el-button>
         </el-upload>
+        <p v-if="form.file != ''"  style="font-size: 14px;color: #606266;">
+          <svg-icon icon-class="zip" style="margin-right: 10px;"/>
+          {{form.file}}
+        </p>
       </el-form-item>
       <el-form-item v-show="type==0" label="API" prop='api'>
         <el-input v-model="form.api" placeholder="请输入可疑 API" style="width: 50%;"></el-input>
@@ -42,7 +46,7 @@
 </template>
 
 <script>
-import { judge_apply } from '@/api/judge'
+import { judge_apply, judge_upload } from '@/api/judge'
 export default {
   data(){
     const validatefileList = (rule, value, callback) => {
@@ -66,12 +70,12 @@ export default {
         token:this.$store.getters.token,
         hash: '',
         api: '',
-        fileList: []
+        file: ''
       },
       formRules: {
         hash: [{required: true, message:'请输入注册记录哈希值',trigger:'blur'}],
         api: [{required: true, validator:validateAPI, trigger:'blur'}],
-        fileList: [{required: true, validator:validatefileList, trigger:'blur'}],
+        file: [{required: true, validator:validatefileList, trigger:'blur'}],
       }
     }
   },
@@ -99,6 +103,7 @@ export default {
               	duration: 2 * 1000
               })
               this.loading = false
+              this.$router.push({ path:'/home/timeline' })
             }
           }).catch(() => {
               this.loading = false
@@ -107,6 +112,28 @@ export default {
           return false
         }
       })
+    },
+    beforeUpload(file){
+      var fd = new FormData();
+      fd.append('file', file);
+      fd.append('hash', this.form.hash);
+      judge_upload(fd).then(response => {
+        console.log("success")
+        if(response.message == 'success') {
+          console.log(file.name)
+          this.form.file = file.name
+          this.$message({
+            message: '文件上传成功',
+          	type: 'success',
+          	showClose: true,
+          	duration: 2 * 1000
+          })
+        }
+      }).catch(() => {
+              console.log("error")
+              this.activestep = 2
+            })
+       return false  //屏蔽了action的默认上传
     },
     handleChange(file, fileList) {
       this.form.fileList = fileList.slice(-3)
@@ -117,9 +144,6 @@ export default {
     handleRemove(file, fileList) {
       console.log(file, fileList);
       this.form.fileList = fileList.slice(-3)
-    },
-    beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${ file.name }？`);
     }
   }
 }

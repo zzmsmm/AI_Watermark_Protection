@@ -52,12 +52,12 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/home',
+    redirect: '/home/:list',
     children: [{
-      path: 'home',
+      path: 'home/:list',
       name: 'Home',
       component: () => import('@/views/home/index'),
-      meta: { title: '个人主页', icon: 'user' }
+      meta: { title: '个人主页', icon: 'user', activeMenu: '/home/:list' }
     }]
   },
 

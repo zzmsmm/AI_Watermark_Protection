@@ -25,18 +25,18 @@ export default {
   methods: {
     getlist() {
       certification_list(this.$store.getters.token).then(response => {
-        console.log(response)
+        //console.log(response)
         const { data } = response
-        console.log()
+        //console.log()
         var count = 0
         for(var i in data){
           count ++
         }
-        console.log(count)
+        //console.log(count)
         this.List_Num = count
         for(var i = 0;i<count;i++){
           this.$set(this.List,i,data[i])
-          console.log(data[i].timestamp)
+          //console.log(data[i].timestamp)
         }
       })
     }

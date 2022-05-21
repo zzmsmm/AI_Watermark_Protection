@@ -1,5 +1,5 @@
 <template>
-  <el-card style="height: 480px;">
+  <el-card style="height: 500px; margin-bottom: 0px;">
     <div slot="header" class="clearfix">
       <div style="font-weight: bold; font-size: 15px; color: #606266;">个人信息</div>
     </div>
@@ -40,11 +40,14 @@
       <div class="user-skills user-bio-section">
         <div class="user-bio-section-header"><svg-icon icon-class="process" /><span>进度</span></div>
         <div class="user-bio-section-body">
+          <el-badge :value="certification_num" :max="10" class="item" type="success">
+            <el-button size="small" @click="toCertification">注册记录</el-button>
+          </el-badge>
           <el-badge :value="unfinished_num" :max="10" class="item" type="error">
             <el-button size="small" @click="toUnfinished">待完成记录</el-button>
           </el-badge>
-          <el-badge :value="certification_num" :max="10" class="item" type="primary">
-            <el-button size="small" @click="toCertification">注册记录</el-button>
+          <el-badge :value="judge_num" :max="10" class="item" type="primary">
+            <el-button size="small" @click="toJudge">裁决记录</el-button>
           </el-badge>
         </div>
       </div>
@@ -56,6 +59,7 @@
 import PanThumb from '@/components/PanThumb'
 import {changeAvatar} from '@/api/user.js'
 import {unfinished_list, certification_list} from '@/api/certification'
+import { judge_list } from '@/api/judge'
 export default {
   components: { PanThumb },
   props: {
@@ -73,8 +77,9 @@ export default {
   data() {
     return {
       imageUrl: '',
-      unfinished_num: 5,
-      certification_num: 4
+      unfinished_num: '',
+      certification_num: '',
+      judge_num: '',
     }
   },
   created(){
@@ -100,12 +105,26 @@ export default {
         }
         this.unfinished_num = count
       })
+      judge_list(this.$store.getters.token).then(response => {
+        console.log(response)
+        const { data } = response
+        var count = 0
+        for(var i in data){
+          count ++
+        }
+        this.judge_num = count
+      })
     },
     toUnfinished() {
       this.$router.push({ path:'/certification/list/' })
     },
     toCertification() {
-       this.$router.go(0) 
+      //this.$router.go(0)
+      this.$router.push({ path:'/home/'+ 'activity' })
+    },
+    toJudge() {
+      //this.$router.go(0)
+      this.$router.push({ path:'/home/'+ 'timeline' })
     },
     handleAvatarSuccess(res, file) {
             // this.imageUrl = URL.createObjectURL(file.raw);
