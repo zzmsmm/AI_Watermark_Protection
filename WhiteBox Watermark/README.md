@@ -36,7 +36,7 @@ WhiteBoxTest.py：版权认证中心根据用户提交的 python 文件、疑似
 #### 目标检测模型
 CV_ObjectDetection_Standard 目录是对深度学习中目标检测模型进行白盒水印保护时用户提交文件制定的规范
 
-我们以 PennFudan 数据集和 ResNet 网络结构为例，对用户提交数据的格式进行了规定
+我们以 PennFudan 数据集和 FastRCNN 网络结构为例，对用户提交数据的格式进行了规定
 
 每个文件的作用如下：
 
