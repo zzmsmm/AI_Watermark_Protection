@@ -5,19 +5,19 @@ AI model copyright protection platform based on watermark
 
 ## Team member
 
-张卓萌
+zzm
 
-罗书卿
+lsq
 
-李佳露
+ljl
 
-朱文骏
+zwj
 
-章杭炜
+zhw
 
-张昊
+zh
 
-蔡锶维
+csw
 
 ## 代码说明
 
